@@ -1,17 +1,36 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { SplineScene } from '@/components/ui/spline-scene';
 import { Badge } from '@/components/ui/badge';
 
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "center center"]
   });
+
+  // Track mouse position across the entire section
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      // Calculate position relative to the section
+      setMousePosition({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    };
+
+    section.addEventListener('mousemove', handleMouseMove);
+    return () => section.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Robot zooms out as user scrolls (starts zoomed in, zooms out to normal)
   const robotScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.8, 1.3, 1]);
@@ -105,6 +124,7 @@ export default function About() {
             <SplineScene 
               scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
               className="w-full h-full"
+              mousePosition={mousePosition}
             />
           </motion.div>
         </div>
