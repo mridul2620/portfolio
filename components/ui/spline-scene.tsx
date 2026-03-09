@@ -9,21 +9,47 @@ interface SplineSceneProps {
   scene: string
   className?: string
   mousePosition?: { x: number; y: number }
+  containerRect?: { width: number; height: number }
 }
 
-export function SplineScene({ scene, className, mousePosition }: SplineSceneProps) {
+export function SplineScene({ scene, className, mousePosition, containerRect }: SplineSceneProps) {
   const splineRef = useRef<Application | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   const onLoad = (spline: Application) => {
     splineRef.current = spline
   }
 
   useEffect(() => {
-    if (splineRef.current && mousePosition) {
-      // Emit mouse move event to the Spline scene with coordinates
-      splineRef.current.emitEvent('mouseHover', 'Robot')
-    }
-  }, [mousePosition])
+    if (!containerRef.current || !mousePosition || !containerRect) return
+    
+    // Find the canvas element inside the Spline container
+    const canvas = containerRef.current.querySelector('canvas')
+    if (!canvas) return
+
+    // Get the canvas bounds
+    const canvasRect = canvas.getBoundingClientRect()
+    
+    // Map the section mouse position to canvas coordinates
+    // Normalize the position relative to the container/section dimensions
+    const normalizedX = mousePosition.x / containerRect.width
+    const normalizedY = mousePosition.y / containerRect.height
+    
+    // Convert to canvas pixel coordinates
+    const canvasX = normalizedX * canvasRect.width
+    const canvasY = normalizedY * canvasRect.height
+    
+    // Create and dispatch a synthetic mouse event on the canvas
+    const syntheticEvent = new MouseEvent('mousemove', {
+      clientX: canvasRect.left + canvasX,
+      clientY: canvasRect.top + canvasY,
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    })
+    
+    canvas.dispatchEvent(syntheticEvent)
+  }, [mousePosition, containerRect])
 
   return (
     <Suspense 
@@ -36,15 +62,7 @@ export function SplineScene({ scene, className, mousePosition }: SplineSceneProp
         </div>
       }
     >
-      <div 
-        className={className}
-        style={{
-          // Use CSS custom properties to pass mouse position to the scene
-          // @ts-expect-error CSS custom properties
-          '--mouse-x': mousePosition ? `${mousePosition.x}px` : '50%',
-          '--mouse-y': mousePosition ? `${mousePosition.y}px` : '50%',
-        }}
-      >
+      <div ref={containerRef} className={className}>
         <Spline
           scene={scene}
           className="w-full h-full"

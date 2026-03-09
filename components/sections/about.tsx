@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [containerRect, setContainerRect] = useState({ width: 0, height: 0 });
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -19,6 +20,13 @@ export default function About() {
     const section = sectionRef.current;
     if (!section) return;
 
+    // Get initial container dimensions
+    const updateContainerRect = () => {
+      const rect = section.getBoundingClientRect();
+      setContainerRect({ width: rect.width, height: rect.height });
+    };
+    updateContainerRect();
+
     const handleMouseMove = (e: MouseEvent) => {
       const rect = section.getBoundingClientRect();
       // Calculate position relative to the section
@@ -29,7 +37,12 @@ export default function About() {
     };
 
     section.addEventListener('mousemove', handleMouseMove);
-    return () => section.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', updateContainerRect);
+    
+    return () => {
+      section.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', updateContainerRect);
+    };
   }, []);
 
   // Robot zooms out as user scrolls (starts zoomed in, zooms out to normal)
@@ -125,6 +138,7 @@ export default function About() {
               scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
               className="w-full h-full"
               mousePosition={mousePosition}
+              containerRect={containerRect}
             />
           </motion.div>
         </div>
