@@ -1,49 +1,17 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { SplineScene } from '@/components/ui/spline-scene';
 import { Badge } from '@/components/ui/badge';
 
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [containerRect, setContainerRect] = useState({ width: 0, height: 0 });
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "center center"]
   });
-
-  // Track mouse position across the entire section
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    // Get initial container dimensions
-    const updateContainerRect = () => {
-      const rect = section.getBoundingClientRect();
-      setContainerRect({ width: rect.width, height: rect.height });
-    };
-    updateContainerRect();
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
-      // Calculate position relative to the section
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    };
-
-    section.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('resize', updateContainerRect);
-    
-    return () => {
-      section.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', updateContainerRect);
-    };
-  }, []);
 
   // Robot zooms out as user scrolls (starts zoomed in, zooms out to normal)
   const robotScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.8, 1.3, 1]);
@@ -63,7 +31,19 @@ export default function About() {
       ref={sectionRef}
       className="min-h-screen bg-black relative overflow-hidden"
     >
-      <div className="container mx-auto px-4 py-20">
+      {/* Spline scene covering entire section for mouse tracking */}
+      <motion.div 
+        style={{ scale: robotScale, opacity: robotOpacity }}
+        className="absolute inset-0 z-0"
+      >
+        <SplineScene 
+          scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+          className="w-full h-full"
+        />
+      </motion.div>
+
+      {/* Content overlay */}
+      <div className="container mx-auto px-4 py-20 relative z-10 pointer-events-none">
         {/* Header - Always visible */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -80,13 +60,13 @@ export default function About() {
           </p>
         </motion.div>
 
-        {/* Main content with robot */}
+        {/* Main content */}
         <div className="flex flex-col lg:flex-row items-center gap-8 min-h-[600px]">
           
           {/* Left content */}
           <motion.div 
             style={{ opacity: contentOpacity, y: contentY }}
-            className="flex-1 relative z-10 space-y-6 lg:pr-8"
+            className="flex-1 space-y-6 lg:pr-8 lg:max-w-[50%]"
           >
             <p className="text-lg text-neutral-300 leading-relaxed">
               I build scalable, high-performance applications that bridge the gap 
@@ -97,7 +77,7 @@ export default function About() {
             
             <div className="space-y-3">
               <h3 className="text-xl font-semibold text-neutral-100">Core Technologies</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 pointer-events-auto">
                 {skills.map((skill, index) => (
                   <motion.div
                     key={skill}
@@ -117,30 +97,20 @@ export default function About() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div className="p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
+            <div className="grid grid-cols-2 gap-4 pt-4 pointer-events-auto">
+              <div className="p-4 rounded-lg bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm">
                 <p className="text-2xl font-bold text-neutral-100">B.Tech</p>
                 <p className="text-sm text-neutral-400">Information Technology</p>
               </div>
-              <div className="p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
+              <div className="p-4 rounded-lg bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm">
                 <p className="text-2xl font-bold text-neutral-100">UK</p>
                 <p className="text-sm text-neutral-400">Based</p>
               </div>
             </div>
           </motion.div>
 
-          {/* Right - 3D Robot */}
-          <motion.div 
-            style={{ scale: robotScale, opacity: robotOpacity }}
-            className="flex-1 h-[500px] lg:h-[600px] relative"
-          >
-            <SplineScene 
-              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-              className="w-full h-full"
-              mousePosition={mousePosition}
-              containerRect={containerRect}
-            />
-          </motion.div>
+          {/* Right side - empty space for robot visual positioning */}
+          <div className="flex-1 h-[500px] lg:h-[600px]" />
         </div>
       </div>
     </section>
