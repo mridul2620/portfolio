@@ -1,128 +1,114 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import { SplineScene } from '@/components/ui/spline-scene';
 import { Badge } from '@/components/ui/badge';
 
 export default function About() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.2,
-      },
-    },
-  };
+  const sectionRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "center center"]
+  });
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
+  // Robot zooms out as user scrolls (starts zoomed in, zooms out to normal)
+  const robotScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.8, 1.3, 1]);
+  const robotOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  
+  // Content fades in after robot settles
+  const contentOpacity = useTransform(scrollYProgress, [0.4, 0.7], [0, 1]);
+  const contentY = useTransform(scrollYProgress, [0.4, 0.7], [30, 0]);
 
-  const interests = [
-    'Web Development',
-    'Mobile Apps',
-    'CI/CD',
-    'AI/ML',
-    'DevOps',
-    'Open Source',
-    'Performance optimization',
-    'Data Structures and Algorithms',
-    'Cloud Computing'
+  const skills = [
+    'React', 'Next.js', 'TypeScript', 'Node.js', 'Java', 'Python'
   ];
 
   return (
-    <section id="about" className="py-20 section-gradient">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="container mx-auto px-4"
-      >
-        <motion.div variants={itemVariants} className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Passionate about creating exceptional digital experiences through modern web technologies
+    <section 
+      id="about" 
+      ref={sectionRef}
+      className="min-h-screen bg-black relative overflow-hidden"
+    >
+      <div className="container mx-auto px-4 py-20">
+        {/* Header - Always visible */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+            About Me
+          </h2>
+          <p className="mt-4 text-neutral-400 text-lg">
+            Full-Stack Developer & Problem Solver
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div variants={itemVariants} className="space-y-6">
-            <p className="text-lg leading-relaxed">
-              I am a Full-stack developer with expertise in building scalable applications, optimizing system performance, and driving innovation through Agile methodologies. 
-              I create end-to-end solutions that combine backend efficiency, frontend responsiveness, and cloud scalability.
+        {/* Main content with robot */}
+        <div className="flex flex-col lg:flex-row items-center gap-8 min-h-[600px]">
+          
+          {/* Left content */}
+          <motion.div 
+            style={{ opacity: contentOpacity, y: contentY }}
+            className="flex-1 relative z-10 space-y-6 lg:pr-8"
+          >
+            <p className="text-lg text-neutral-300 leading-relaxed">
+              I build scalable, high-performance applications that bridge the gap 
+              between elegant design and robust engineering. With expertise in 
+              modern web technologies and cloud solutions, I transform complex 
+              problems into seamless digital experiences.
             </p>
             
-            <p className="text-lg leading-relaxed">
-            With a strong foundation in Java and expertise in modern web technologies focused on performance and cloud solutions, I bring frontend proficiency in React, Next.js, and TypeScript to deliver end-to-end, high-impact, cross-platform software solutions.
-            </p>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold">Interests & Passions</h3>
+            <div className="space-y-3">
+              <h3 className="text-xl font-semibold text-neutral-100">Core Technologies</h3>
               <div className="flex flex-wrap gap-2">
-                {interests.map((interest, index) => (
+                {skills.map((skill, index) => (
                   <motion.div
-                    key={interest}
+                    key={skill}
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <Badge variant="secondary" className="text-sm">
-                      {interest}
+                    <Badge 
+                      variant="secondary" 
+                      className="bg-neutral-800/80 text-neutral-200 border border-neutral-700 hover:bg-neutral-700 transition-colors"
+                    >
+                      {skill}
                     </Badge>
                   </motion.div>
                 ))}
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
+                <p className="text-2xl font-bold text-neutral-100">B.Tech</p>
+                <p className="text-sm text-neutral-400">Information Technology</p>
+              </div>
+              <div className="p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
+                <p className="text-2xl font-bold text-neutral-100">UK</p>
+                <p className="text-sm text-neutral-400">Based</p>
+              </div>
+            </div>
           </motion.div>
 
-          <motion.div variants={itemVariants}>
-            <Card className="p-6 glass-effect border-primary/20">
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Education</h3>
-                  <div>
-                    <p className="font-medium">Bachelors of Technology in Information Technology</p>
-                    <p className="text-muted-foreground">First Class (equivalent)</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Quick Facts</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Languages</span>
-                      <span className="text-muted-foreground">Java, JavaScript, TypeScript, Python, SQL, Dart</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Frameworks</span>
-                      <span className="text-muted-foreground">React, Node.js, Express.js MongoDB, Next.js, Tailwind, Vite, Flutter</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Focus</span>
-                      <span className="text-muted-foreground">Full Stack Development</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Location</span>
-                      <span className="text-muted-foreground">United Kingdom</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Right - 3D Robot */}
+          <motion.div 
+            style={{ scale: robotScale, opacity: robotOpacity }}
+            className="flex-1 h-[500px] lg:h-[600px] relative"
+          >
+            <SplineScene 
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="w-full h-full"
+            />
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
