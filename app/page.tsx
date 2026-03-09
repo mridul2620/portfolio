@@ -1,13 +1,46 @@
-import Image from "next/image";
+'use client';
+
+import Hero from '@/components/sections/hero';
+import About from '@/components/sections/about';
+import Projects from '@/components/sections/projects';
+import Experience from '@/components/sections/experience';
+import Skills from '@/components/sections/skills';
+import Contact from '@/components/sections/contact';
+import Navigation from '@/components/navigation';
+import Particles from '@/components/particles';
+import { useEffect } from 'react';
 
 export default function Home() {
+  useEffect(() => {
+    const handleSmoothScroll = (e: Event) => {
+      const target = e.target as HTMLAnchorElement;
+      if (target.getAttribute('href')?.startsWith('#')) {
+        e.preventDefault();
+        const id = target.getAttribute('href')?.slice(1);
+        const element = document.getElementById(id!);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+      }
+    };
+
+    document.addEventListener('click', handleSmoothScroll);
+    return () => document.removeEventListener('click', handleSmoothScroll);
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
-          Welcome to Next.js!
-        </h1>
-      </main>
-    </div>
+    <main className="relative">
+      <Particles />
+      <Navigation />
+      <Hero />
+      <About />
+      <Skills />
+      <Experience />
+      <Projects />
+      <Contact />
+    </main>
   );
 }
