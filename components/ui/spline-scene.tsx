@@ -1,23 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 
-export function SplineScene({ scene, className }: { scene: string; className?: string }) {
-  const [Spline, setSpline] = useState<any>(null)
+const Spline = dynamic(
+  () => import("@splinetool/react-spline").then((mod) => mod.default),
+  { ssr: false }
+)
 
-  useEffect(() => {
-    import("@splinetool/react-spline").then((mod) => {
-      setSpline(() => mod.default)
-    })
-  }, [])
+interface SplineSceneProps {
+  scene: string
+  className?: string
+}
 
-  if (!Spline) {
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  return <Spline scene={scene} className={className} />
+export function SplineScene({ scene, className }: SplineSceneProps) {
+  return (
+    <Spline
+      scene={scene}
+      className={className}
+    />
+  )
 }
