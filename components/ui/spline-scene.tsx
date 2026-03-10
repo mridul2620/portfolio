@@ -1,30 +1,23 @@
-'use client'
+"use client"
 
-import { Suspense, lazy } from 'react'
+import { useEffect, useState } from "react"
 
-const Spline = lazy(() => import('@splinetool/react-spline'))
+export function SplineScene({ scene, className }: { scene: string; className?: string }) {
+  const [Spline, setSpline] = useState<any>(null)
 
-interface SplineSceneProps {
-  scene: string
-  className?: string
-}
+  useEffect(() => {
+    import("@splinetool/react-spline").then((mod) => {
+      setSpline(() => mod.default)
+    })
+  }, [])
 
-export function SplineScene({ scene, className }: SplineSceneProps) {
-  return (
-    <Suspense 
-      fallback={
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-muted-foreground text-sm">Loading 3D Scene...</span>
-          </div>
-        </div>
-      }
-    >
-      <Spline
-        scene={scene}
-        className={className}
-      />
-    </Suspense>
-  )
+  if (!Spline) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return <Spline scene={scene} className={className} />
 }
