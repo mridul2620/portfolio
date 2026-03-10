@@ -72,10 +72,10 @@ export default function About() {
         style={{ scale: robotScale, opacity: robotOpacity }}
         className="absolute inset-0 z-0 opacity-70"
       >
-        {/* <SplineScene
+        <SplineScene
           scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
           className="w-full h-full"
-        /> */}
+        />
       </motion.div>
       <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black/60" />
 
