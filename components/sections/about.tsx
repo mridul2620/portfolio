@@ -7,16 +7,13 @@ import { GraduationCap, MapPin, Code2, Lightbulb } from 'lucide-react';
 import GlowCard from "@/components/ui/glow-card"
 import dynamic from "next/dynamic"
 
+// SplineScene already handles its own lazy loading internally via useEffect.
+// Do NOT wrap it in dynamic() again — that causes double-wrapping which
+// can trigger the "Super constructor null" crash on Vercel prod builds.
+import { SplineScene } from "@/components/ui/spline-scene"
+
 const GlowingEffect = dynamic(
   () => import("@/components/ui/glowing-effect").then((m) => m.GlowingEffect),
-  { ssr: false }
-)
-
-const SplineScene = dynamic(
-  () =>
-    import("@/components/ui/spline-scene").then(
-      (mod) => mod.SplineScene
-    ),
   { ssr: false }
 )
 
@@ -55,11 +52,11 @@ export default function About() {
   ];
 
   const stats = [
-  { value: "60+", label: "Active Users", sub: "SaaS Platform" },
-  { value: "25%", label: "API Latency", sub: "Performance Gain" },
-  { value: "30%", label: "Query Reduction", sub: "DB Optimisation" },
-  { value: "35%", label: "Load Time", sub: "Frontend Improvement" },
-];
+    { value: "60+", label: "Active Users", sub: "SaaS Platform" },
+    { value: "25%", label: "API Latency", sub: "Performance Gain" },
+    { value: "30%", label: "Query Reduction", sub: "DB Optimisation" },
+    { value: "35%", label: "Load Time", sub: "Frontend Improvement" },
+  ];
 
   return (
     <section
@@ -118,90 +115,88 @@ export default function About() {
 
                 {/* Bio */}
                 <div className="relative p-[2px] rounded-2xl">
-  <GlowingEffect
-    spread={40}
-    glow
-    disabled={false}
-    proximity={64}
-    inactiveZone={0.01}
-    borderWidth={3}
-  />
-                <div className="p-6 rounded-2xl bg-card/70 border border-border shadow-[0_0_40px_rgba(59,130,246,0.08)] backdrop-blur-md">
-                  <p className="text-neutral-300 leading-relaxed " >
-                    Full-stack engineer with 3+ years building production grade web systems and cross-platform applications.
-                    I specialize in building scalable full-stack applications, designing robust backend services and REST APIs with Node.js, Java and Python while delivering modern frontend experiences using React and Next.js.
-                  </p>
-                  <p className="text-neutral-400 mt-3">
-                    Focused on performance, reliability and clean architecture while delivering modern full-stack applications.
-                  </p>
-                </div>
+                  <GlowingEffect
+                    spread={40}
+                    glow
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    borderWidth={3}
+                  />
+                  <div className="p-6 rounded-2xl bg-card/70 border border-border shadow-[0_0_40px_rgba(59,130,246,0.08)] backdrop-blur-md">
+                    <p className="text-neutral-300 leading-relaxed">
+                      Full-stack engineer with 3+ years building production grade web systems and cross-platform applications.
+                      I specialize in building scalable full-stack applications, designing robust backend services and REST APIs with Node.js, Java and Python while delivering modern frontend experiences using React and Next.js.
+                    </p>
+                    <p className="text-neutral-400 mt-3">
+                      Focused on performance, reliability and clean architecture while delivering modern full-stack applications.
+                    </p>
+                  </div>
                 </div>
 
-                  {/* Quick facts */}
+                {/* Quick facts */}
                 <div className="grid grid-cols-2 gap-3 pointer-events-auto">
-  {quickFacts.map((fact, index) => (
-    <motion.div
-      key={fact.label}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      viewport={{ once: true }}
-    >
-      <GlowCard>
-        <fact.icon className="w-5 h-5 text-neutral-400 mb-2" />
-        <p className="text-lg font-semibold text-neutral-100">{fact.label}</p>
-        <p className="text-sm text-neutral-500">{fact.sublabel}</p>
-      </GlowCard>
-    </motion.div>
-  ))}
-</div>
+                  {quickFacts.map((fact, index) => (
+                    <motion.div
+                      key={fact.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <GlowCard>
+                        <fact.icon className="w-5 h-5 text-neutral-400 mb-2" />
+                        <p className="text-lg font-semibold text-neutral-100">{fact.label}</p>
+                        <p className="text-sm text-neutral-500">{fact.sublabel}</p>
+                      </GlowCard>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
 
               {/* RIGHT COLUMN */}
               <div className="lg:max-w-sm space-y-6">
-                
+
                 {/* Tech */}
                 <div className="relative p-[2px] rounded-2xl">
-  <GlowingEffect
-    spread={35}
-    glow
-    disabled={false}
-    proximity={64}
-    inactiveZone={0.01}
-    borderWidth={3}
-  />
-
-  <div className="p-6 rounded-2xl bg-card/70 border border-border backdrop-blur-md">
-    <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
-      Core Technologies
-    </h3>
-
-    <div className="flex flex-wrap gap-2">
-      {skills.map((skill) => (
-        <Badge key={skill}>{skill}</Badge>
-      ))}
-    </div>
-  </div>
-</div>
+                  <GlowingEffect
+                    spread={35}
+                    glow
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    borderWidth={3}
+                  />
+                  <div className="p-6 rounded-2xl bg-card/70 border border-border backdrop-blur-md">
+                    <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
+                      Core Technologies
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill) => (
+                        <Badge key={skill}>{skill}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
                 {/* Impact stats */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-  {stats.map((stat, index) => (
-    <motion.div
-      key={stat.label}
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      viewport={{ once: true }}
-    >
-      <GlowCard>
-        <p className="text-2xl font-bold text-white">{stat.value}</p>
-        <p className="text-sm text-neutral-400">{stat.label}</p>
-        <p className="text-xs text-neutral-500">{stat.sub}</p>
-      </GlowCard>
-    </motion.div>
-  ))}
-</div>
+                  {stats.map((stat, index) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <GlowCard>
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                        <p className="text-sm text-neutral-400">{stat.label}</p>
+                        <p className="text-xs text-neutral-500">{stat.sub}</p>
+                      </GlowCard>
+                    </motion.div>
+                  ))}
+                </div>
 
               </div>
 
