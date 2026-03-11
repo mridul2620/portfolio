@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 
 const Spline = dynamic(
-  () => import('@splinetool/react-spline').then((m) => m.default),
+  () => import('@splinetool/react-spline'),
   { ssr: false }
 )
 
