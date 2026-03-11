@@ -1,21 +1,19 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ComponentType } from 'react'
 
-const Spline = dynamic(
-  () => import('@splinetool/react-spline'),
-  { ssr: false }
-)
+type SplineProps = { scene: string; className?: string }
 
-export function SplineScene({ scene, className }: { scene: string; className?: string }) {
-  const [mounted, setMounted] = useState(false)
+export function SplineScene({ scene, className }: SplineProps) {
+  const [Spline, setSpline] = useState<ComponentType<SplineProps> | null>(null)
 
   useEffect(() => {
-    setMounted(true)
+    import('@splinetool/react-spline')
+      .then((mod) => setSpline(() => mod.default))
+      .catch((err) => console.error('[SplineScene] failed to load:', err))
   }, [])
 
-  if (!mounted) return null
+  if (!Spline) return null
 
   return <Spline scene={scene} className={className} />
 }
