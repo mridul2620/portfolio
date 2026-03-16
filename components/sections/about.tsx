@@ -2,20 +2,9 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { GraduationCap, MapPin, Code2, Lightbulb } from 'lucide-react';
-import GlowCard from "@/components/ui/glow-card"
-import dynamic from "next/dynamic"
-
-// SplineScene already handles its own lazy loading internally via useEffect.
-// Do NOT wrap it in dynamic() again — that causes double-wrapping which
-// can trigger the "Super constructor null" crash on Vercel prod builds.
+import { Card, CardContent } from '@/components/ui/card';
+import { GraduationCap, MapPin, Code2, Lightbulb, User, Terminal, Database } from 'lucide-react';
 import { SplineScene } from "@/components/ui/spline-scene"
-
-const GlowingEffect = dynamic(
-  () => import("@/components/ui/glowing-effect").then((m) => m.GlowingEffect),
-  { ssr: false }
-)
 
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -53,16 +42,16 @@ export default function About() {
 
   const stats = [
     { value: "60+", label: "Active Users", sub: "SaaS Platform" },
-    { value: "25%", label: "API Latency", sub: "Performance Gain" },
-    { value: "30%", label: "Query Reduction", sub: "DB Optimisation" },
     { value: "35%", label: "Load Time", sub: "Frontend Improvement" },
+    { value: "30%", label: "Query Reduction", sub: "DB Optimisation" },
+    { value: "25%", label: "API Latency", sub: "Performance Gain" },
   ];
 
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="min-h-screen section-gradient relative overflow-hidden"
+      className="relative section-gradient overflow-hidden py-32"
     >
       {/* Robot scene */}
       <motion.div
@@ -74,13 +63,13 @@ export default function About() {
           className="w-full h-full"
         />
       </motion.div>
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black/60" />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-background/10 via-background/40 to-background/90" />
 
       {/* Content */}
-      <div className="absolute inset-0 z-10 flex flex-col pointer-events-none">
+      <div className="relative z-10 flex flex-col pointer-events-none container mx-auto px-4 md:px-8">
 
         {/* Header */}
-        <div className="pt-12 pb-4 px-4">
+        <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -88,54 +77,57 @@ export default function About() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-              About Me
+            <div className="inline-flex items-center justify-center p-2 mb-4 rounded-full bg-primary/10 text-primary pointer-events-auto">
+              <User className="w-5 h-5 mr-2 ml-1" />
+              <span className="text-sm font-semibold tracking-wider uppercase pr-3">About Me</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-4 text-white drop-shadow-lg">
+              Engineering with <span className="gradient-text">Precision.</span>
             </h2>
 
-            <p className="mt-3 text-neutral-400 text-lg md:text-xl max-w-xl mx-auto">
-              Building scalable full-stack systems and reliable backend architectures
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+              Building scalable full-stack systems and reliable backend architectures that deliver impact.
             </p>
-
-            <div className="w-24 h-[2px] mx-auto mt-4 bg-gradient-to-r from-primary to-transparent opacity-60" />
           </motion.div>
         </div>
-
-        <div className="flex-1" />
 
         {/* Bottom content */}
         <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
-          className="px-4 md:px-8 lg:px-16 pb-12"
+          className="pb-12"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row justify-between gap-8">
+            <div className="grid lg:grid-cols-[1.2fr_300px_1.2fr] xl:grid-cols-[1.2fr_450px_1.2fr] gap-8 items-center">
 
               {/* LEFT COLUMN */}
-              <div className="lg:max-w-md space-y-6">
+              <div className="space-y-6 pointer-events-auto">
 
                 {/* Bio */}
-                <div className="relative p-[2px] rounded-2xl">
-                  <GlowingEffect
-                    spread={40}
-                    glow
-                    disabled={false}
-                    proximity={64}
-                    inactiveZone={0.01}
-                    borderWidth={3}
-                  />
-                  <div className="p-6 rounded-2xl bg-card/70 border border-border shadow-[0_0_40px_rgba(59,130,246,0.08)] backdrop-blur-md">
-                    <p className="text-neutral-300 leading-relaxed">
-                      Full-stack engineer with 3+ years building production grade web systems and cross-platform applications.
-                      I specialize in building scalable full-stack applications, designing robust backend services and REST APIs with Node.js, Java and Python while delivering modern frontend experiences using React and Next.js.
-                    </p>
-                    <p className="text-neutral-400 mt-3">
-                      Focused on performance, reliability and clean architecture while delivering modern full-stack applications.
-                    </p>
-                  </div>
+                <div className="relative group">
+                  <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-2xl blur-sm opacity-50 group-hover:opacity-100 transition duration-500" />
+                  <Card className="relative h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden bg-card/60 backdrop-blur-xl rounded-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="p-8 relative z-10">
+                      <div className="mb-6 flex items-center gap-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
+                          <Terminal className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-display font-semibold tracking-tight text-white m-0">Engineering Journey</h3>
+                      </div>
+                      <p className="text-neutral-300 leading-relaxed text-base font-body">
+                        I am a full-stack engineer with 3+ years building production-grade web systems and cross-platform applications. 
+                        I specialize in designing robust backend services, scalable microservices, and REST APIs using Node.js, Java, and Python.
+                      </p>
+                      <p className="text-neutral-400 mt-4 leading-relaxed text-base font-body">
+                        On the frontend, I focus on delivering seamless, performant, and modern user experiences using React and Next.js, always obsessing over clean architecture.
+                      </p>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Quick facts */}
-                <div className="grid grid-cols-2 gap-3 pointer-events-auto">
+                <div className="grid grid-cols-2 gap-4">
                   {quickFacts.map((fact, index) => (
                     <motion.div
                       key={fact.label}
@@ -144,43 +136,59 @@ export default function About() {
                       transition={{ delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <GlowCard>
-                        <fact.icon className="w-5 h-5 text-neutral-400 mb-2" />
-                        <p className="text-lg font-semibold text-neutral-100">{fact.label}</p>
-                        <p className="text-sm text-neutral-500">{fact.sublabel}</p>
-                      </GlowCard>
+                      <Card className="h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative group bg-card/40 backdrop-blur-md rounded-xl">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
+                        <CardContent className="p-5 flex flex-col justify-center h-full relative z-10">
+                          <fact.icon className="w-5 h-5 text-primary mb-3 group-hover:scale-110 transition-transform duration-500" />
+                          <p className="text-sm font-semibold text-neutral-200">{fact.label}</p>
+                          <p className="text-xs text-neutral-500 mt-1">{fact.sublabel}</p>
+                        </CardContent>
+                      </Card>
                     </motion.div>
                   ))}
                 </div>
               </div>
 
-              {/* RIGHT COLUMN */}
-              <div className="lg:max-w-sm space-y-6">
+              {/* MIDDLE COLUMN (SPACE FOR ROBOT) */}
+              <div className="hidden lg:block h-[450px]" aria-hidden="true"></div>
 
-                {/* Tech */}
-                <div className="relative p-[2px] rounded-2xl">
-                  <GlowingEffect
-                    spread={35}
-                    glow
-                    disabled={false}
-                    proximity={64}
-                    inactiveZone={0.01}
-                    borderWidth={3}
-                  />
-                  <div className="p-6 rounded-2xl bg-card/70 border border-border backdrop-blur-md">
-                    <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
-                      Core Technologies
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skills.map((skill) => (
-                        <Badge key={skill}>{skill}</Badge>
-                      ))}
-                    </div>
-                  </div>
+              {/* RIGHT COLUMN */}
+              <div className="space-y-6 pointer-events-auto">
+
+                {/* Tech Stack */}
+                <div className="relative group">
+                  <div className="absolute -inset-[1px] bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-2xl blur-sm opacity-50 group-hover:opacity-100 transition duration-500" />
+                  <Card className="relative h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden bg-card/60 backdrop-blur-xl rounded-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-bl from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="p-8 relative z-10">
+                      <div className="mb-6 flex items-center gap-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
+                          <Database className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-display font-semibold tracking-tight text-white m-0">Toolkit</h3>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2.5">
+                        {skills.map((skill, index) => (
+                          <motion.div
+                            key={skill}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.05 }}
+                            viewport={{ once: true }}
+                            whileHover={{ scale: 1.05 }}
+                            className="px-3.5 py-1.5 text-sm font-medium bg-secondary/30 text-neutral-200 rounded-lg border border-border/50 hover:bg-primary hover:border-transparent hover:text-white cursor-default transition-all duration-300 shadow-sm backdrop-blur-sm"
+                          >
+                            {skill}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Impact stats */}
-                <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="grid grid-cols-2 gap-4">
                   {stats.map((stat, index) => (
                     <motion.div
                       key={stat.label}
@@ -189,11 +197,17 @@ export default function About() {
                       transition={{ delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <GlowCard>
-                        <p className="text-2xl font-bold text-white">{stat.value}</p>
-                        <p className="text-sm text-neutral-400">{stat.label}</p>
-                        <p className="text-xs text-neutral-500">{stat.sub}</p>
-                      </GlowCard>
+                      <Card className="h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative group bg-[rgba(10,10,15,0.4)] backdrop-blur-md rounded-xl">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
+                        <CardContent className="p-5 flex flex-col justify-center h-full relative z-10 text-center">
+                          <p className="text-3xl font-display font-bold text-white tracking-tighter mb-1 relative inline-block group-hover:scale-105 transition-transform duration-300">
+                            {stat.value}
+                            <span className="absolute -bottom-2 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/0 via-primary to-primary/0 scale-0 group-hover:scale-100 transition-transform duration-500" />
+                          </p>
+                          <p className="text-sm font-medium text-neutral-300">{stat.label}</p>
+                          <p className="text-xs text-neutral-500 mt-0.5">{stat.sub}</p>
+                        </CardContent>
+                      </Card>
                     </motion.div>
                   ))}
                 </div>
@@ -206,4 +220,4 @@ export default function About() {
       </div>
     </section>
   );
-}
+}

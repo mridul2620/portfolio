@@ -12,6 +12,12 @@ const config: Config = {
 
   theme: {
     extend: {
+      fontFamily: {
+        display : ['var(--font-syne)',        'sans-serif'],
+        body    : ['var(--font-inter)',        'sans-serif'],
+        mono    : ['var(--font-mono)',         'monospace'],
+      },
+
       container: {
         center: true,
         padding: "1.5rem",
