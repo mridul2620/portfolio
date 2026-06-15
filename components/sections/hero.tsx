@@ -2,15 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import { Github, Linkedin, Mail, ArrowDownRight } from "lucide-react"
-import { gsap } from "@/lib/gsap"
-import { ScrollTrigger } from "@/lib/gsap"
-
-// Tech stack tags that float in during Act 1
-const TECH_TAGS = [
-  "React", "Next.js", "Node.js", "TypeScript",
-  "Java", "Python", "MongoDB",
-  "Docker", "AWS"
-]
+import { gsap, ScrollTrigger } from "@/lib/gsap"
+import { TECH_TAGS } from "@/lib/data"
 
 export default function Hero() {
   const sectionRef  = useRef<HTMLElement>(null)
@@ -30,17 +23,28 @@ export default function Hero() {
 
     const ctx = gsap.context(() => {
 
-      gsap.to(orb1Ref.current, {
+      const orbTween1 = gsap.to(orb1Ref.current, {
         x: 60, y: -40, duration: 8, ease: "sine.inOut",
         yoyo: true, repeat: -1,
       })
-      gsap.to(orb2Ref.current, {
+      const orbTween2 = gsap.to(orb2Ref.current, {
         x: -50, y: 60, duration: 11, ease: "sine.inOut",
         yoyo: true, repeat: -1, delay: 1.5,
       })
-      gsap.to(orb3Ref.current, {
+      const orbTween3 = gsap.to(orb3Ref.current, {
         x: 35, y: 30, duration: 9, ease: "sine.inOut",
         yoyo: true, repeat: -1, delay: 3,
+      })
+
+      // Pause infinite orb animations when hero section is offscreen to save CPU/GPU
+      ScrollTrigger.create({
+        trigger : section,
+        start   : "top bottom",
+        end     : "bottom top",
+        onEnter       : () => { orbTween1.resume(); orbTween2.resume(); orbTween3.resume() },
+        onEnterBack   : () => { orbTween1.resume(); orbTween2.resume(); orbTween3.resume() },
+        onLeave       : () => { orbTween1.pause(); orbTween2.pause(); orbTween3.pause() },
+        onLeaveBack   : () => { orbTween1.pause(); orbTween2.pause(); orbTween3.pause() },
       })
 
       ScrollTrigger.create({

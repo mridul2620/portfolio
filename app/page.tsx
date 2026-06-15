@@ -12,6 +12,7 @@ const Skills    = dynamic(() => import('@/components/sections/skills'))
 const Experience = dynamic(() => import('@/components/sections/experience'))
 const Projects  = dynamic(() => import('@/components/sections/projects'))
 const Contact   = dynamic(() => import('@/components/sections/contact'))
+const Footer    = dynamic(() => import('@/components/footer'))
 
 // This is a Server Component — no 'use client' directive — so Next.js can
 // pre-render the HTML shell. Only the imported Client Components hydrate JS.
@@ -35,6 +36,8 @@ export default function Home() {
         <Contact />
       </div>
 
+      {/* Footer */}
+      <Footer />
     </main>
   )
 }

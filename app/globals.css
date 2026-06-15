@@ -138,10 +138,7 @@ html.lenis { height: auto; }
   padding-bottom: 8rem;
 }
 
-.gpu {
-  transform: translateZ(0);
-  will-change: transform;
-}
+
 
 /* background only on non-hero sections so the hero bg shows through */
 section:not(#home) {
@@ -308,12 +305,12 @@ section:not(#home) {
 }
 
 .hud-tl {
-  top: 24px; left: 24px;
+  top: 8px; left: 24px;
   border-top: 1.5px solid rgba(99, 179, 237, 0.5);
   border-left: 1.5px solid rgba(99, 179, 237, 0.5);
 }
 .hud-tr {
-  top: 24px; right: 24px;
+  top: 8px; right: 24px;
   border-top: 1.5px solid rgba(99, 179, 237, 0.5);
   border-right: 1.5px solid rgba(99, 179, 237, 0.5);
 }
@@ -344,7 +341,7 @@ section:not(#home) {
   );
   transform-origin: left center;
 }
-.hud-top-line    { top: 24px; }
+.hud-top-line    { top: 8px; }
 .hud-bottom-line { bottom: 24px; }
 
 /* ── Progress bar ──────────────────────────────────────────── */
@@ -367,7 +364,7 @@ section:not(#home) {
 .hero-sys-label {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: 40px;
   z-index: 10;
   font-family: var(--font-code);
   font-size: 0.62rem;

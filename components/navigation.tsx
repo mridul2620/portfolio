@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Moon, Sun, Menu, X } from "lucide-react"
-import { useTheme } from "next-themes"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navItems = [
@@ -17,8 +16,6 @@ const navItems = [
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const { resolvedTheme, setTheme } = useTheme()
 
   useEffect(() => {
     let ticking = false
@@ -38,6 +35,19 @@ export default function Navigation() {
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    setIsMobileMenuOpen(false)
+    
+    const targetId = href.replace(/.*\#/, "")
+    const elem = document.getElementById(targetId)
+    if (elem) {
+      elem.scrollIntoView({
+        behavior: "smooth",
+      })
+    }
+  }
 
   return (
     <nav
@@ -61,7 +71,8 @@ export default function Navigation() {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors cursor-pointer"
               >
                 {item.label}
               </a>
@@ -69,20 +80,6 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
-
-            {/* Theme toggle
-            <Button
-  variant="ghost"
-  size="sm"
-  onClick={() =>
-    setTheme(resolvedTheme === "dark" ? "light" : "dark")
-  }
-  className="w-9 h-9 relative"
->
-  <Sun className="h-4 w-4 transition-all rotate-0 scale-100 dark:-rotate-90 dark:scale-0" />
-  <Moon className="absolute h-4 w-4 transition-all rotate-90 scale-0 dark:rotate-0 dark:scale-100" />
-</Button> */}
-
             {/* Mobile button */}
             <Button
               variant="ghost"
@@ -114,8 +111,8 @@ export default function Navigation() {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors cursor-pointer"
                 >
                   {item.label}
                 </a>

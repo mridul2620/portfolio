@@ -1,12 +1,10 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { GraduationCap, MapPin, Code2, Lightbulb, User, Terminal, Database } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { User, Terminal } from 'lucide-react'
 import { useReveal } from '@/hooks/use-reveal'
-import { QUICK_FACTS, IMPACT_STATS, ABOUT_SKILLS } from '@/lib/data'
-
-const ICON_MAP = { GraduationCap, MapPin, Code2, Lightbulb } as const
+import { INFO_CARDS } from '@/lib/data'
 
 // Dynamically import Spline only when the About section enters the viewport
 // so the ~1 MB 3D scene doesn't block initial page load.
@@ -19,162 +17,156 @@ const SplineScene = dynamic(
 export default function About() {
   const sectionRef = useReveal<HTMLElement>(0.05)
   const headerRef  = useReveal<HTMLDivElement>(0.1)
-  const leftRef    = useReveal<HTMLDivElement>(0.1)
-  const rightRef   = useReveal<HTMLDivElement>(0.1)
+  const statsRef   = useReveal<HTMLDivElement>(0.1)
 
-  // Only mount the Spline scene after the section scrolls into view
+  // Mount the Spline scene as soon as the user starts scrolling
+  // This gives the ~1 MB 3D scene plenty of time to render before it enters the viewport
   const splineWrapRef = useRef<HTMLDivElement>(null)
   const [splineVisible, setSplineVisible] = useState(false)
 
   useEffect(() => {
-    const el = splineWrapRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setSplineVisible(true)
-          obs.unobserve(el)
-        }
-      },
-      { threshold: 0.01 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
+    const handleScroll = () => {
+      setSplineVisible(true)
+      window.removeEventListener('scroll', handleScroll)
+    }
+    
+    // If they have already scrolled, render immediately
+    if (window.scrollY > 0) {
+      setSplineVisible(true)
+    } else {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+    }
+    
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="reveal-on-scroll relative section-gradient overflow-hidden py-32"
+      className="reveal-on-scroll relative section-gradient overflow-hidden pt-24 md:pt-32 pb-12 md:pb-16"
     >
-      {/* Robot scene — only loaded when section enters viewport */}
-      <div ref={splineWrapRef} className="absolute inset-0 z-0 opacity-70">
-        {splineVisible && (
-          <SplineScene
-            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="w-full h-full"
-          />
-        )}
-      </div>
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-background/10 via-background/40 to-background/90" />
+      {/* Background gradients */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-background/10 via-background/40 to-background/90" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col pointer-events-none container mx-auto px-4 md:px-8">
-
-        {/* Header */}
-        <div ref={headerRef} className="reveal-on-scroll mb-16 text-center">
-          <div className="inline-flex items-center justify-center p-2 mb-4 rounded-full bg-primary/10 text-primary pointer-events-auto">
+      <div className="relative z-10 flex flex-col pointer-events-none container mx-auto px-4 md:px-8 max-w-7xl">
+        
+        {/* Header & Summary */}
+        <div ref={headerRef} className="reveal-on-scroll mb-8 text-center pointer-events-auto">
+          <div className="inline-flex items-center justify-center p-2 mb-6 rounded-full bg-primary/10 text-primary">
             <User className="w-5 h-5 mr-2 ml-1" />
             <span className="text-sm font-semibold tracking-wider uppercase pr-3">About Me</span>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-4 text-white drop-shadow-lg">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter mb-6 text-white drop-shadow-lg">
             Engineering with <span className="gradient-text">Precision.</span>
           </h2>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Building scalable full-stack systems and reliable backend architectures that deliver impact.
+          <p className="text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed font-inter">
+            Full-stack engineer with 3+ years of experience building enterprise SaaS platforms, AI-powered applications, and scalable backend systems. Specializing in Java, Node.js, Python, and React with a strong focus on cloud architecture and production-grade software.
           </p>
         </div>
 
-        <div className="pb-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-[1.2fr_300px_1.2fr] xl:grid-cols-[1.2fr_450px_1.2fr] gap-8 items-center">
-
-              {/* LEFT */}
-              <div ref={leftRef} className="reveal-on-scroll space-y-6 pointer-events-auto" style={{ transitionDelay: '100ms' }}>
-                <div className="relative group">
-                  <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-2xl blur-sm opacity-50 group-hover:opacity-100 transition duration-500" />
-                  <Card className="relative h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden bg-card/60 backdrop-blur-xl rounded-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <CardContent className="p-8 relative z-10">
-                      <div className="mb-6 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
-                          <Terminal className="w-6 h-6 text-primary" />
-                        </div>
-                        <h3 className="text-xl font-display font-semibold tracking-tight text-white m-0">Engineering Journey</h3>
-                      </div>
-                      <p className="text-neutral-300 leading-relaxed text-base font-body">
-                        I am a full-stack engineer with 3+ years building production-grade web systems and cross-platform applications.
-                        I specialize in designing robust backend services, scalable microservices, and REST APIs using Node.js, Java, and Python.
-                      </p>
-                      <p className="text-neutral-400 mt-4 leading-relaxed text-base font-body">
-                        On the frontend, I focus on delivering seamless, performant, and modern user experiences using React and Next.js, always obsessing over clean architecture.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {QUICK_FACTS.map((fact) => {
-                    const Icon = ICON_MAP[fact.icon as keyof typeof ICON_MAP]
-                    return (
-                      <Card
-                        key={fact.label}
-                        className="h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative group bg-card/40 backdrop-blur-md rounded-xl"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
-                        <CardContent className="p-5 flex flex-col justify-center h-full relative z-10">
-                          <Icon className="w-5 h-5 text-primary mb-3 group-hover:scale-110 transition-transform duration-500" />
-                          <p className="text-sm font-semibold text-neutral-200">{fact.label}</p>
-                          <p className="text-xs text-neutral-500 mt-1">{fact.sublabel}</p>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
+        {/* The Radial Narrative Core */}
+        <div ref={statsRef} className="reveal-on-scroll relative w-full mt-8 pointer-events-none">
+          
+          {/* Spline Background layer that spans full width for tracking */}
+          <div 
+            ref={splineWrapRef} 
+            className="absolute inset-0 w-full h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center pointer-events-auto z-0 group mx-auto my-auto lg:my-0"
+          >
+            {/* Ambient glow behind robot */}
+            <div className="absolute inset-0 bg-primary/10 blur-[120px] rounded-full pointer-events-none transition-opacity duration-700 opacity-80 group-hover:opacity-100 scale-y-50" />
+            
+            {splineVisible && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-full scale-[1.3] lg:scale-[1.4] transition-transform duration-700 ease-out origin-center pointer-events-auto">
+                <SplineScene
+                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                  className="w-full h-full"
+                />
               </div>
+            )}
+          </div>
 
-              {/* MIDDLE — spacer for robot */}
-              <div className="hidden lg:block h-[450px]" aria-hidden="true" />
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,1fr)_auto_minmax(300px,1fr)] gap-8 lg:gap-0 items-center relative z-10 pointer-events-none">
+            
+            {/* Left: What I Deliver */}
+            <div className="w-full max-w-[340px] mx-auto lg:ml-auto lg:mr-0 z-10 pointer-events-none">
+              <Card className="glass-effect border border-white/5 bg-[rgba(10,10,15,0.6)] backdrop-blur-xl rounded-2xl relative p-6 lg:p-8 h-full pointer-events-none">
+                <h3 className="text-xl lg:text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 relative z-10">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 text-primary">
+                    <Terminal className="w-4 h-4" />
+                  </div>
+                  What I Deliver
+                </h3>
+                <ul className="space-y-3 relative z-10 text-sm text-neutral-300 font-inter">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> Enterprise SaaS Platforms
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> AI-Powered Applications
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> Internal Business Tools
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> Role-Based Access Control Systems
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> Secure Authentication Systems
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span> Backend APIs & Microservices
+                  </li>
+                </ul>
+              </Card>
+            </div>
 
-              {/* RIGHT */}
-              <div ref={rightRef} className="reveal-on-scroll space-y-6 pointer-events-auto" style={{ transitionDelay: '200ms' }}>
-                <div className="relative group">
-                  <div className="absolute -inset-[1px] bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-2xl blur-sm opacity-50 group-hover:opacity-100 transition duration-500" />
-                  <Card className="relative h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden bg-card/60 backdrop-blur-xl rounded-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-bl from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <CardContent className="p-8 relative z-10">
-                      <div className="mb-6 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
-                          <Database className="w-6 h-6 text-primary" />
-                        </div>
-                        <h3 className="text-xl font-display font-semibold tracking-tight text-white m-0">Toolkit</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-2.5">
-                        {ABOUT_SKILLS.map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-3.5 py-1.5 text-sm font-medium bg-secondary/30 text-neutral-200 rounded-lg border border-border/50 hover:bg-primary hover:border-transparent hover:text-white cursor-default transition-all duration-300 shadow-sm backdrop-blur-sm"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+            {/* Center Spacer Column (Maintains the Grid Layout) */}
+            <div className="hidden lg:block w-[45vw] max-w-[650px] h-[500px] pointer-events-none" />
 
-                <div className="grid grid-cols-2 gap-4">
-                  {IMPACT_STATS.map((stat) => (
-                    <Card
-                      key={stat.label}
-                      className="h-full glass-effect border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative group bg-[rgba(10,10,15,0.4)] backdrop-blur-md rounded-xl"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
-                      <CardContent className="p-5 flex flex-col justify-center h-full relative z-10 text-center">
-                        <p className="text-3xl font-display font-bold text-white tracking-tighter mb-1 relative inline-block group-hover:scale-105 transition-transform duration-300">
-                          {stat.value}
-                          <span className="absolute -bottom-2 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/0 via-primary to-primary/0 scale-0 group-hover:scale-100 transition-transform duration-500" />
-                        </p>
-                        <p className="text-sm font-medium text-neutral-300">{stat.label}</p>
-                        <p className="text-xs text-neutral-500 mt-0.5">{stat.sub}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-
+            {/* Right: Professional Profile */}
+            <div className="w-full max-w-[340px] mx-auto lg:mr-auto lg:ml-0 z-10 pointer-events-none">
+              <Card className="glass-effect border border-white/5 bg-[rgba(10,10,15,0.6)] backdrop-blur-xl rounded-2xl relative p-6 lg:p-8 pointer-events-none">
+                <h3 className="text-xl lg:text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 relative z-10">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 text-primary">
+                    <User className="w-4 h-4" />
+                  </div>
+                  Professional Profile
+                </h3>
+                <ul className="space-y-4 relative z-10">
+                  <li>
+                    <p className="text-[10px] md:text-xs uppercase tracking-widest text-primary font-semibold mb-1">Current Role</p>
+                    <p className="text-sm text-neutral-200 font-inter">Programmer Analyst</p>
+                  </li>
+                  <li>
+                    <p className="text-[10px] md:text-xs uppercase tracking-widest text-primary font-semibold mb-1">Education</p>
+                    <p className="text-sm text-neutral-200 font-inter">B.Tech (IT) - First Class</p>
+                  </li>
+                  <li>
+                    <p className="text-[10px] md:text-xs uppercase tracking-widest text-primary font-semibold mb-1">Location</p>
+                    <p className="text-sm text-neutral-200 font-inter">Coventry, UK</p>
+                  </li>
+                  <li>
+                    <p className="text-[10px] md:text-xs uppercase tracking-widest text-primary font-semibold mb-1">Specialisation</p>
+                    <p className="text-sm text-neutral-200 font-inter">Full-Stack Product Development</p>
+                  </li>
+                </ul>
+              </Card>
             </div>
           </div>
+
+          {/* Information Cards Base */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-8 pointer-events-auto">
+            {INFO_CARDS.map((card) => (
+              <Card key={card.label} className="glass-effect border border-white/5 bg-[rgba(10,10,15,0.4)] backdrop-blur-xl rounded-xl p-5 md:p-6 text-center hover:bg-[rgba(10,10,15,0.6)] transition-all duration-300 group flex flex-col justify-center">
+                <p className="text-[10px] md:text-xs uppercase tracking-widest text-primary font-semibold mb-2 group-hover:text-white transition-colors">{card.label}</p>
+                <p className="text-base md:text-lg font-display font-bold text-white tracking-tight mb-1">{card.value}</p>
+                <p className="text-[10px] md:text-xs text-neutral-400 font-inter">{card.subtitle}</p>
+              </Card>
+            ))}
+          </div>
+
         </div>
 
       </div>

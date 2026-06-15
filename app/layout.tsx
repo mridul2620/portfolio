@@ -12,7 +12,7 @@ import { Toaster } from '@/components/ui/sonner'
 const syne = Syne({
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['600', '700', '800'],
   variable: '--font-syne',
 })
 
@@ -26,7 +26,7 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
-  weight: ['300', '400', '500'],
+  weight: ['400', '500'],
   variable: '--font-mono',
 })
 
@@ -87,6 +87,35 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${syne.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        {/* Preconnect to external origins used by the page — saves 200-500ms per origin */}
+        <link rel="preconnect" href="https://images.pexels.com" />
+        <link rel="preconnect" href="https://prod.spline.design" />
+        <link rel="dns-prefetch" href="https://images.pexels.com" />
+        <link rel="dns-prefetch" href="https://prod.spline.design" />
+
+        {/* Structured data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: 'Mridul Srivastava',
+              jobTitle: 'Full Stack Developer',
+              url: 'https://portfolio-mridulsriv.vercel.app',
+              sameAs: [
+                'https://github.com/mridul2620',
+                'https://www.linkedin.com/in/mridul-srivastava-a198b51b5/',
+              ],
+              knowsAbout: [
+                'React', 'Next.js', 'Node.js', 'TypeScript',
+                'Java', 'Python', 'MongoDB', 'Docker', 'AWS',
+              ],
+            }),
+          }}
+        />
+      </head>
       <body className="bg-black text-white antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <div id="scroll-root" className="min-h-[calc(100vh-4rem)]">
