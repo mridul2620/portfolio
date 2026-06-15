@@ -212,7 +212,7 @@ database: 'MongoDB',
 authentication: 'JWT',
 reporting: 'CSV & PDF Generation',
 notifications: 'Email Service Integration',
-deployment: 'Ubuntu + Nginx',
+deployment: 'Cloud Hosted',
 },
 
 technologies: [
