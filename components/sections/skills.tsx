@@ -50,8 +50,6 @@ export default function Skills() {
   )
 }
 
-// Splitting each card into its own component so the useReveal ref attaches
-// per-card, giving the staggered reveal effect without Framer Motion.
 function SkillCard({
   category,
   Icon,

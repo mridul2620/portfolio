@@ -11,7 +11,7 @@ export default function Experience() {
 
   return (
     <section id="experience" className="py-24 relative overflow-hidden">
-      {/* Background decorations */}
+
       <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -z-10" />
 
@@ -30,7 +30,7 @@ export default function Experience() {
 
         <div className="max-w-5xl mx-auto">
           <div className="relative">
-            {/* Timeline line */}
+
             <div className="absolute left-8 md:left-1/2 transform md:-translate-x-px top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-primary/20 to-transparent" />
 
             <div className="space-y-16">
@@ -63,16 +63,16 @@ function ExperienceCard({
       className="reveal-on-scroll relative flex flex-col md:flex-row items-center group mb-8 last:mb-0"
       style={{ transitionDelay: `${delay}ms` }}
     >
-      {/* Timeline dot */}
+
       <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 bg-background rounded-full border-4 border-primary/20 flex items-center justify-center z-20 shadow-[0_0_15px_rgba(var(--primary),0.1)] transition-colors duration-500 group-hover:border-primary/40">
         <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-primary rounded-full transition-transform duration-500 group-hover:scale-[1.5] group-hover:shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
         <div className="absolute inset-0 rounded-full border border-primary animate-ping opacity-10 group-hover:opacity-30 transition-opacity duration-300" />
       </div>
 
       <div className={`w-full ml-16 md:ml-0 flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center justify-between`}>
-        {/* Card */}
+
         <div className={`w-full md:w-[45%] ${isEven ? 'md:text-right' : 'md:text-left'} pt-4 md:pt-0`}>
-          {/* Mobile Date */}
+
           <div className="md:hidden mb-4 text-primary font-medium flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             {exp.period}
@@ -110,10 +110,8 @@ function ExperienceCard({
           </div>
         </div>
 
-        {/* Spacer */}
         <div className="hidden md:block w-[10%]" />
 
-        {/* Date (Desktop) */}
         <div className={`hidden md:flex w-[45%] ${isEven ? 'justify-start' : 'justify-end'}`}>
           <div className={`text-xl font-bold text-muted-foreground/40 group-hover:text-primary transition-colors duration-300 flex items-center gap-3 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
             <Calendar className="w-5 h-5" />

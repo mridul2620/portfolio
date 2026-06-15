@@ -4,11 +4,6 @@ import { Syne, Inter, JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 
-/**
- * Syne — geometric display font, futuristic energy for headings
- * Inter — industry-standard UI body font, supremely readable
- * JetBrains Mono — premium developer monospace for code/labels
- */
 const syne = Syne({
   subsets: ['latin'],
   display: 'swap',
@@ -88,13 +83,12 @@ export default function RootLayout({
       className={`${syne.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        {/* Preconnect to external origins used by the page — saves 200-500ms per origin */}
+
         <link rel="preconnect" href="https://images.pexels.com" />
         <link rel="preconnect" href="https://prod.spline.design" />
         <link rel="dns-prefetch" href="https://images.pexels.com" />
         <link rel="dns-prefetch" href="https://prod.spline.design" />
 
-        {/* Structured data for SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

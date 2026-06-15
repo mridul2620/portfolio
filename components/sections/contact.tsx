@@ -12,7 +12,6 @@ import { CONTACT_INFO } from '@/lib/data'
 
 const ICON_MAP = { Mail, Phone, MapPin } as const
 
-
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const headerRef = useReveal<HTMLDivElement>(0.1)

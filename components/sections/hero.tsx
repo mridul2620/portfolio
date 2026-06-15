@@ -36,7 +36,6 @@ export default function Hero() {
         yoyo: true, repeat: -1, delay: 3,
       })
 
-      // Pause infinite orb animations when hero section is offscreen to save CPU/GPU
       ScrollTrigger.create({
         trigger : section,
         start   : "top bottom",
@@ -206,7 +205,6 @@ export default function Hero() {
 
     return () => ctx.revert()
   }, [])
-
 
   const splitChars = (text: string) =>
     text.split("").map((ch, i) => (

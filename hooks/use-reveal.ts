@@ -14,7 +14,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
       ([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add('revealed')
-          obs.unobserve(el) 
+          obs.unobserve(el)
         }
       },
       { threshold }

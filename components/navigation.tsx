@@ -39,7 +39,7 @@ export default function Navigation() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     setIsMobileMenuOpen(false)
-    
+
     const targetId = href.replace(/.*\#/, "")
     const elem = document.getElementById(targetId)
     if (elem) {
@@ -60,12 +60,10 @@ export default function Navigation() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
-          {/* Logo */}
           <div className="text-xl font-bold text-primary">
             MS
           </div>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex space-x-8">
             {navItems.map((item) => (
               <a
@@ -80,7 +78,7 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* Mobile button */}
+
             <Button
               variant="ghost"
               size="sm"
@@ -99,8 +97,6 @@ export default function Navigation() {
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
 
       {isMobileMenuOpen && (
         <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-border/40">

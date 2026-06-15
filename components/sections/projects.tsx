@@ -32,10 +32,6 @@ import {
   useMotionValueEvent,
 } from 'motion/react'
 
-/* ═══════════════════════════════════════════════════════════
-   ROOT — Projects Section
-═══════════════════════════════════════════════════════════ */
-
 export default function Projects() {
   const [expandedProject, setExpandedProject] = useState<Project | null>(null)
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
@@ -46,7 +42,6 @@ export default function Projects() {
     setMounted(true)
   }, [])
 
-  // lock body scroll when detail modal or lightbox is open
   useEffect(() => {
     if (expandedProject || lightboxImage) {
       document.body.style.overflow = 'hidden'
@@ -62,24 +57,22 @@ export default function Projects() {
       ref={sectionRef}
       className="relative py-24 md:py-32 overflow-hidden"
     >
-      {/* ambient background glow */}
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 sm:px-6 max-w-7xl">
-        {/* ── Section Header ── */}
+
         <SectionHeader />
 
-        {/* ── Project Grid ── */}
         <ProjectGrid
           projects={PROJECTS}
           onExpand={setExpandedProject}
         />
       </div>
 
-      {/* ── Detail Modal ── */}
       {mounted && createPortal(
         <AnimatePresence>
           {expandedProject && (
@@ -92,7 +85,6 @@ export default function Projects() {
         document.body
       )}
 
-      {/* ── Lightbox Modal ── */}
       {mounted && createPortal(
         <AnimatePresence>
           {lightboxImage && (
@@ -107,10 +99,6 @@ export default function Projects() {
     </section>
   )
 }
-
-/* ═══════════════════════════════════════════════════════════
-   SECTION HEADER
-═══════════════════════════════════════════════════════════ */
 
 function SectionHeader() {
   const ref = useRef<HTMLDivElement>(null)
@@ -143,10 +131,6 @@ function SectionHeader() {
     </motion.div>
   )
 }
-
-/* ═══════════════════════════════════════════════════════════
-   FEATURED PROJECT SPOTLIGHT
-═══════════════════════════════════════════════════════════ */
 
 function FeaturedProject({
   project,
@@ -182,14 +166,13 @@ function FeaturedProject({
         group
       `}>
 
-        {/* ── Gradient accent strip at top ── */}
         <div className={`h-1 w-full bg-gradient-to-r ${project.gradient.replace(/\/20/g, '/60')}`} />
 
         <div className="flex flex-col lg:flex-row items-stretch">
-          {/* ── Left Column ── */}
+
           <div className="w-full lg:w-[48%] flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-white/[0.01]">
-            {/* Image Panel */}
-            <button 
+
+            <button
               onClick={onImageClick}
               className="relative w-full h-64 sm:h-80 lg:h-[380px] overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary block"
               aria-label={`View ${project.title} fullscreen image`}
@@ -209,7 +192,6 @@ function FeaturedProject({
                 />
               </motion.div>
 
-              {/* Role badge on image */}
               <div className="absolute top-4 left-4 flex items-center gap-2">
                 <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-xs font-mono text-white/80">
                   <User className="w-3 h-3 inline mr-1.5 opacity-60" />
@@ -222,12 +204,10 @@ function FeaturedProject({
               </div>
             </button>
 
-            {/* Metrics & Tech Stack */}
             <div className="p-6 sm:p-8 flex flex-col gap-6 flex-1">
-              {/* Metrics Dashboard */}
+
               <MetricsDashboard metrics={project.metrics} />
 
-              {/* Tech stack */}
               <div className="flex flex-wrap gap-1.5 mt-auto">
                 {project.technologies.map((tech) => (
                   <span
@@ -241,10 +221,9 @@ function FeaturedProject({
             </div>
           </div>
 
-          {/* ── Right Column (Content Panel) ── */}
           <div className="flex-1 p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-between bg-black/20">
             <div className="space-y-6">
-              {/* category chip */}
+
               <Badge className="bg-primary/10 text-primary border-primary/20 font-mono text-[10px] tracking-widest uppercase">
                 {project.category}
               </Badge>
@@ -258,7 +237,6 @@ function FeaturedProject({
                 </p>
               </div>
 
-              {/* Problem → Solution */}
               <div className="space-y-4 pt-4">
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
                   <Target className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
@@ -277,7 +255,6 @@ function FeaturedProject({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex flex-wrap items-center gap-3 mt-6 pt-6 border-t border-white/[0.06]">
               <button
                 onClick={onExpand}
@@ -318,10 +295,6 @@ function FeaturedProject({
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   METRICS DASHBOARD (Animated Counters)
-═══════════════════════════════════════════════════════════ */
-
 function MetricsDashboard({ metrics }: { metrics: Project['metrics'] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -353,7 +326,7 @@ function MetricCard({ metric }: { metric: Project['metrics'][number] }) {
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime
       const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3) // cubic ease-out
+      const eased = 1 - Math.pow(1 - progress, 3)
 
       const current = numericValue * eased
       setDisplayValue(isFloat ? current.toFixed(1) : Math.floor(current).toString())
@@ -384,10 +357,6 @@ function MetricCard({ metric }: { metric: Project['metrics'][number] }) {
     </div>
   )
 }
-
-/* ═══════════════════════════════════════════════════════════
-   PROJECT GRID (Secondary Projects)
-═══════════════════════════════════════════════════════════ */
 
 function ProjectGrid({
   projects,
@@ -437,10 +406,9 @@ function ProjectCard({
         onClick={onExpand}
         className="group w-full text-left rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] hover:border-primary/20 transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        {/* gradient top accent */}
+
         <div className={`h-0.5 w-full bg-gradient-to-r ${project.gradient.replace(/\/20/g, '/40')}`} />
 
-        {/* image strip */}
         <div className="relative h-56 sm:h-64 md:h-72 lg:h-80 overflow-hidden bg-black/20">
           <img
             src={project.image}
@@ -453,9 +421,6 @@ function ProjectCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-          {/* floating category badge removed */}
-
-          {/* hover reveal: metrics preview */}
           <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
             {project.metrics.slice(0, 3).map((m) => (
               <div
@@ -471,7 +436,6 @@ function ProjectCard({
           </div>
         </div>
 
-        {/* content */}
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3 mb-2">
             <h3 className="text-lg sm:text-xl font-syne font-bold tracking-tight group-hover:text-primary transition-colors">
@@ -483,7 +447,6 @@ function ProjectCard({
             {project.subtitle}
           </p>
 
-          {/* tech row */}
           <div className="flex flex-wrap gap-1.5">
             {project.technologies.slice(0, 5).map((tech) => (
               <span
@@ -505,10 +468,6 @@ function ProjectCard({
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PROJECT DETAIL MODAL
-═══════════════════════════════════════════════════════════ */
-
 function ProjectDetail({
   project,
   onClose,
@@ -518,7 +477,6 @@ function ProjectDetail({
 }) {
   const overlayRef = useRef<HTMLDivElement>(null)
 
-  // Close on escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -536,7 +494,7 @@ function ProjectDetail({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* backdrop */}
+
       <motion.div
         className="fixed inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
@@ -545,7 +503,6 @@ function ProjectDetail({
         exit={{ opacity: 0 }}
       />
 
-      {/* modal content */}
       <motion.div
         className="relative z-10 w-full max-w-4xl mx-4 my-8 sm:my-12 md:my-16 rounded-2xl md:rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0a0a14]"
         initial={{ opacity: 0, y: 40, scale: 0.97 }}
@@ -556,10 +513,9 @@ function ProjectDetail({
         aria-modal="true"
         aria-label={`${project.title} case study`}
       >
-        {/* gradient accent strip */}
+
         <div className={`h-1 w-full bg-gradient-to-r ${project.gradient.replace(/\/20/g, '/60')}`} />
 
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -568,7 +524,6 @@ function ProjectDetail({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Hero image */}
         <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] overflow-hidden bg-black/20">
           <img
             src={project.image}
@@ -579,7 +534,6 @@ function ProjectDetail({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/40 to-transparent pointer-events-none" />
 
-          {/* title overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="text-xs font-mono text-white/40">
@@ -598,9 +552,8 @@ function ProjectDetail({
           </div>
         </div>
 
-        {/* Body content */}
         <div className="p-6 sm:p-8 space-y-10">
-          {/* Metrics Bar */}
+
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {project.metrics.map((m) => (
               <div
@@ -616,14 +569,12 @@ function ProjectDetail({
             ))}
           </div>
 
-          {/* Description */}
           <div>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-inter">
               {project.description}
             </p>
           </div>
 
-          {/* Problem + Solution */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-5 rounded-xl bg-red-500/5 border border-red-500/10">
               <div className="flex items-center gap-2 mb-3">
@@ -641,9 +592,8 @@ function ProjectDetail({
             </div>
           </div>
 
-          {/* Business Impact & Quantitative Impact */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Business Impact */}
+
             {project.businessImpact && (
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -661,7 +611,6 @@ function ProjectDetail({
               </div>
             )}
 
-            {/* Quantitative Impact */}
             {project.impact && project.impact.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -680,7 +629,6 @@ function ProjectDetail({
             )}
           </div>
 
-          {/* Key Features */}
           {project.features && (
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -698,7 +646,6 @@ function ProjectDetail({
             </div>
           )}
 
-          {/* Engineering Challenges */}
           {project.challenges && (
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -716,7 +663,6 @@ function ProjectDetail({
             </div>
           )}
 
-          {/* System Design & Architecture */}
           {(project.systemDesign || project.architecture) && (
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -724,8 +670,7 @@ function ProjectDetail({
                 <span className="text-sm font-semibold text-foreground font-syne">System Design &amp; Architecture</span>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                {/* Architecture Decisions */}
+
                 <div className="lg:col-span-7 space-y-2">
                   {project.architecture.map((item, i) => (
                     <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
@@ -737,7 +682,6 @@ function ProjectDetail({
                   ))}
                 </div>
 
-                {/* System Specs */}
                 {project.systemDesign && (
                   <div className="lg:col-span-5 flex flex-col gap-2">
                     {Object.entries(project.systemDesign).map(([key, value]) => (
@@ -752,7 +696,6 @@ function ProjectDetail({
             </div>
           )}
 
-          {/* Tech Stack */}
           <div>
             <span className="text-sm font-semibold text-foreground font-syne block mb-3">Tech Stack</span>
             <div className="flex flex-wrap gap-2">
@@ -767,7 +710,6 @@ function ProjectDetail({
             </div>
           </div>
 
-          {/* Action buttons */}
           <div className="flex flex-wrap gap-3 pt-4 border-t border-white/[0.06]">
             {project.githubUrl && project.githubUrl !== '#' && (
               <a
@@ -798,12 +740,8 @@ function ProjectDetail({
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   LIGHTBOX MODAL
-═══════════════════════════════════════════════════════════ */
-
 function Lightbox({ image, onClose }: { image: string; onClose: () => void }) {
-  // Close on escape
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -820,10 +758,9 @@ function Lightbox({ image, onClose }: { image: string; onClose: () => void }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* backdrop */}
+
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose} />
 
-      {/* close button */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 sm:top-8 sm:right-8 z-50 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -832,7 +769,6 @@ function Lightbox({ image, onClose }: { image: string; onClose: () => void }) {
         <X className="w-6 h-6" />
       </button>
 
-      {/* image */}
       <motion.img
         src={image}
         alt="Fullscreen view"

@@ -1,16 +1,12 @@
-// ─── Centralised static data ───────────────────────────────────────────────
-// Keeping these at module scope ensures they are created exactly once and
-// shared across all re-renders — no object allocation on every render cycle.
+
 
 import image from "next/image"
 
-// Hero -----------------------------------------------------------------------
 export const TECH_TAGS = [
   'React', 'Next.js', 'Node.js', 'TypeScript',
   'Java', 'Python', 'MongoDB', 'Docker', 'AWS',
 ] as const
 
-// About ----------------------------------------------------------------------
 export const INFO_CARDS = [
   { label: 'PROJECTS', value: '4 Enterprise Applications', subtitle: 'Production Ready' },
   { label: 'PLATFORMS', value: 'Web & Mobile', subtitle: 'Cross Platform' },
@@ -18,7 +14,6 @@ export const INFO_CARDS = [
   { label: 'FOCUS', value: 'AI-Driven Products', subtitle: 'Automation & Intelligence' },
 ] as const
 
-// Skills ---------------------------------------------------------------------
 export const SKILL_CATEGORIES = [
   {
     title: 'Frontend',
@@ -46,7 +41,6 @@ export const SKILL_CATEGORIES = [
   },
 ] as const
 
-// Experience -----------------------------------------------------------------
 export const EXPERIENCES = [
   {
     title: 'Programmer Analyst',
@@ -86,7 +80,6 @@ export const EXPERIENCES = [
   },
 ] as const
 
-// Projects -------------------------------------------------------------------
 export type ProjectCategory = 'fullstack' | 'backend' | 'frontend' | 'research'
 
 export interface Project {
@@ -638,7 +631,6 @@ duration: '2 Months',
 },
 ]
 
-// Contact --------------------------------------------------------------------
 export const CONTACT_INFO = [
   { label: 'Email',    value: 'mridulsriv26@gmail.com',                               href: 'mailto:mridulsriv26@gmail.com',                                  icon: 'Mail'   },
   { label: 'Phone',    value: '+44 7423036412',                                        href: 'tel:+447423036412',                                              icon: 'Phone'  },
