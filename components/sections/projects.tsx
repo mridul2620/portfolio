@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
+import Image from 'next/image'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { Badge } from '@/components/ui/badge'
@@ -188,7 +190,7 @@ function FeaturedProject({
                   height={600}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-2xl rounded-lg"
+                  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-2xl rounded-lg will-change-transform"
                 />
               </motion.div>
 

@@ -112,7 +112,7 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <div id="scroll-root" className="min-h-[calc(100vh-4rem)]">
+          <div id="scroll-root" className="min-h-[calc(100dvh-4rem)]">
             {children}
           </div>
 

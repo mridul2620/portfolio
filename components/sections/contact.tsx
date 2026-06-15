@@ -18,13 +18,34 @@ export default function Contact() {
   const leftRef   = useReveal<HTMLDivElement>(0.1)
   const rightRef  = useReveal<HTMLDivElement>(0.1)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setTimeout(() => {
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    formData.append("access_key", "6bfd49c1-c041-4c39-9f22-861f1f0c8e7d")
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success("Message sent successfully! I'll get back to you soon.")
+        form.reset()
+      } else {
+        toast.error("Failed to send message. Please check your configuration.")
+      }
+    } catch (error) {
+      console.error("Form submission error:", error)
+      toast.error("An error occurred. Please try emailing me directly.")
+    } finally {
       setIsSubmitting(false)
-      toast.success("Message sent successfully! I'll get back to you soon.")
-    }, 2000)
+    }
   }
 
   return (
@@ -82,27 +103,27 @@ export default function Contact() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="firstName" className="text-sm font-medium">First Name</label>
-                      <Input id="firstName" placeholder="John" required className="border-border/50 focus:border-primary" />
+                      <Input id="firstName" name="firstName" placeholder="John" required className="border-border/50 focus:border-primary" />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="lastName" className="text-sm font-medium">Last Name</label>
-                      <Input id="lastName" placeholder="Doe" required className="border-border/50 focus:border-primary" />
+                      <Input id="lastName" name="lastName" placeholder="Doe" required className="border-border/50 focus:border-primary" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">Email</label>
-                    <Input id="email" type="email" placeholder="john@example.com" required className="border-border/50 focus:border-primary" />
+                    <Input id="email" name="email" type="email" placeholder="john@example.com" required className="border-border/50 focus:border-primary" />
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="subject" className="text-sm font-medium">Subject</label>
-                    <Input id="subject" placeholder="Project Discussion" required className="border-border/50 focus:border-primary" />
+                    <Input id="subject" name="subject" placeholder="Project Discussion" required className="border-border/50 focus:border-primary" />
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="message" className="text-sm font-medium">Message</label>
-                    <Textarea id="message" placeholder="Tell me about your project..." rows={5} required className="border-border/50 focus:border-primary" />
+                    <Textarea id="message" name="message" placeholder="Tell me about your project..." rows={5} required className="border-border/50 focus:border-primary" />
                   </div>
 
                   <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>

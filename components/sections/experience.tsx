@@ -112,10 +112,10 @@ function ExperienceCard({
 
         <div className="hidden md:block w-[10%]" />
 
-        <div className={`hidden md:flex w-[45%] ${isEven ? 'justify-start' : 'justify-end'}`}>
-          <div className={`text-xl font-bold text-muted-foreground/40 group-hover:text-primary transition-colors duration-300 flex items-center gap-3 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
-            <Calendar className="w-5 h-5" />
-            {exp.period}
+        <div className={`hidden md:flex w-[45%] ${isEven ? 'justify-start pl-6 lg:pl-12' : 'justify-end pr-6 lg:pr-12'}`}>
+          <div className={`text-base lg:text-xl font-bold text-muted-foreground/40 group-hover:text-primary transition-colors duration-300 flex items-center gap-2 lg:gap-3 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
+            <Calendar className="w-4 h-4 lg:w-5 lg:h-5 shrink-0" />
+            <span className="whitespace-nowrap">{exp.period}</span>
           </div>
         </div>
       </div>

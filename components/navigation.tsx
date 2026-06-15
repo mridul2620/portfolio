@@ -83,6 +83,8 @@ export default function Navigation() {
               variant="ghost"
               size="sm"
               className="md:hidden w-9 h-9"
+              aria-label="Toggle mobile menu"
+              aria-expanded={isMobileMenuOpen}
               onClick={() =>
                 setIsMobileMenuOpen(!isMobileMenuOpen)
               }
