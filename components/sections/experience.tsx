@@ -66,7 +66,10 @@ function ExperienceCard({
 
       <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 bg-background rounded-full border-4 border-primary/20 flex items-center justify-center z-20 shadow-[0_0_15px_rgba(var(--primary),0.1)] transition-colors duration-500 group-hover:border-primary/40">
         <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-primary rounded-full transition-transform duration-500 group-hover:scale-[1.5] group-hover:shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-        <div className="absolute inset-0 rounded-full border border-primary animate-ping opacity-10 group-hover:opacity-30 transition-opacity duration-300" />
+        {/* Perf: removed animate-ping — infinite CSS animation on every dot
+            wasted compositing work even when off-screen. Replaced with a
+            static ring that appears on hover only. */}
+        <div className="absolute inset-0 rounded-full border border-primary/0 group-hover:border-primary/20 transition-all duration-300" />
       </div>
 
       <div className={`w-full ml-16 md:ml-0 flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center justify-between`}>

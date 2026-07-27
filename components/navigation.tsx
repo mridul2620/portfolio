@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -23,7 +23,9 @@ export default function Navigation() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 40)
+          // Perf: only trigger re-render when the boolean actually changes
+          const scrolled = window.scrollY > 40
+          setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev))
           ticking = false
         })
 
@@ -31,10 +33,11 @@ export default function Navigation() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
@@ -53,7 +56,7 @@ export default function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-background/70 backdrop-blur-md border-b border-border"
+          ? "bg-background/95 border-b border-border shadow-sm"
           : "bg-transparent"
       }`}
     >

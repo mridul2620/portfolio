@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import Image from 'next/image'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -28,10 +27,7 @@ import {
 import {
   motion,
   AnimatePresence,
-  useScroll,
-  useTransform,
   useInView,
-  useMotionValueEvent,
 } from 'motion/react'
 
 export default function Projects() {
@@ -53,6 +49,19 @@ export default function Projects() {
     return () => { document.body.style.overflow = '' }
   }, [expandedProject, lightboxImage])
 
+  // Perf: stable callback reference — prevents child re-renders
+  const handleExpand = useCallback((p: Project) => {
+    setExpandedProject(p)
+  }, [])
+
+  const handleCloseExpand = useCallback(() => {
+    setExpandedProject(null)
+  }, [])
+
+  const handleCloseLightbox = useCallback(() => {
+    setLightboxImage(null)
+  }, [])
+
   return (
     <section
       id="projects"
@@ -71,7 +80,7 @@ export default function Projects() {
 
         <ProjectGrid
           projects={PROJECTS}
-          onExpand={setExpandedProject}
+          onExpand={handleExpand}
         />
       </div>
 
@@ -80,7 +89,7 @@ export default function Projects() {
           {expandedProject && (
             <ProjectDetail
               project={expandedProject}
-              onClose={() => setExpandedProject(null)}
+              onClose={handleCloseExpand}
             />
           )}
         </AnimatePresence>,
@@ -92,7 +101,7 @@ export default function Projects() {
           {lightboxImage && (
             <Lightbox
               image={lightboxImage}
-              onClose={() => setLightboxImage(null)}
+              onClose={handleCloseLightbox}
             />
           )}
         </AnimatePresence>,
@@ -134,211 +143,52 @@ function SectionHeader() {
   )
 }
 
-function FeaturedProject({
-  project,
-  index,
-  onExpand,
-  onImageClick,
-}: {
-  project: Project
-  index: number
-  onExpand: () => void
-  onImageClick: () => void
-}) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(cardRef, { once: true, margin: '-100px' })
-
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ['start end', 'end start'],
-  })
-  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '15%'])
-
-  return (
-    <motion.div
-      ref={cardRef}
-      className="mb-20 md:mb-32"
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className={`
-        relative rounded-2xl md:rounded-3xl [overflow:clip]
-        border border-white/[0.08] bg-white/[0.02]
-        group
-      `}>
-
-        <div className={`h-1 w-full bg-gradient-to-r ${project.gradient.replace(/\/20/g, '/60')}`} />
-
-        <div className="flex flex-col lg:flex-row items-stretch">
-
-          <div className="w-full lg:w-[48%] flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-white/[0.01]">
-
-            <button
-              onClick={onImageClick}
-              className="relative w-full h-64 sm:h-80 lg:h-[380px] overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary block"
-              aria-label={`View ${project.title} fullscreen image`}
-            >
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center p-4 sm:p-8"
-                style={{ y: imageY }}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  width={800}
-                  height={600}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-2xl rounded-lg will-change-transform"
-                />
-              </motion.div>
-
-              <div className="absolute top-4 left-4 flex items-center gap-2">
-                <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-xs font-mono text-white/80">
-                  <User className="w-3 h-3 inline mr-1.5 opacity-60" />
-                  {project.role}
-                </div>
-                <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-xs font-mono text-white/80">
-                  <Clock className="w-3 h-3 inline mr-1.5 opacity-60" />
-                  {project.duration}
-                </div>
-              </div>
-            </button>
-
-            <div className="p-6 sm:p-8 flex flex-col gap-6 flex-1">
-
-              <MetricsDashboard metrics={project.metrics} />
-
-              <div className="flex flex-wrap gap-1.5 mt-auto">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2.5 py-1 text-[11px] font-mono rounded-md bg-white/5 text-muted-foreground border border-white/[0.06] transition-colors hover:border-primary/30 hover:text-foreground"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-between bg-black/20">
-            <div className="space-y-6">
-
-              <Badge className="bg-primary/10 text-primary border-primary/20 font-mono text-[10px] tracking-widest uppercase">
-                {project.category}
-              </Badge>
-
-              <div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-syne font-bold mb-3 tracking-tight">
-                  {project.title}
-                </h3>
-                <p className="text-muted-foreground text-sm sm:text-base font-inter leading-relaxed max-w-lg">
-                  {project.subtitle}
-                </p>
-              </div>
-
-              <div className="space-y-4 pt-4">
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
-                  <Target className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                    <span className="text-red-400 font-semibold block mb-1 font-syne">The Problem</span>
-                    {project.problem}
-                  </p>
-                </div>
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                  <Zap className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                    <span className="text-emerald-400 font-semibold block mb-1 font-syne">The Solution</span>
-                    {project.solution}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 mt-6 pt-6 border-t border-white/[0.06]">
-              <button
-                onClick={onExpand}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              >
-                View Case Study
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              {project.githubUrl && project.githubUrl !== '#' && (
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full border border-white/10 text-muted-foreground hover:text-foreground hover:border-white/25 transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  <Github className="w-4 h-4" />
-                  Source Code
-                </a>
-              )}
-
-              {project.liveUrl && project.liveUrl !== '#' && (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full border border-white/10 text-muted-foreground hover:text-foreground hover:border-white/25 transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Live Demo
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function MetricsDashboard({ metrics }: { metrics: Project['metrics'] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-      {metrics.map((metric) => (
-        <MetricCard key={metric.label} metric={metric} />
-      ))}
-    </div>
-  )
-}
-
+/**
+ * Perf: MetricCard uses direct DOM mutation for the counter animation
+ * instead of setState (which was causing ~288 React re-renders per view).
+ * The number is written directly to a span via ref.current.textContent.
+ */
 function MetricCard({ metric }: { metric: Project['metrics'][number] }) {
   const ref = useRef<HTMLDivElement>(null)
+  const valueRef = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-40px' })
-  const [displayValue, setDisplayValue] = useState('0')
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    if (!isInView) return
+    if (!isInView || hasAnimated.current) return
+    hasAnimated.current = true
 
     const numericValue = parseFloat(metric.value)
     if (isNaN(numericValue)) {
-      setDisplayValue(metric.value)
+      if (valueRef.current) valueRef.current.textContent = metric.value
       return
     }
 
     const duration = 1200
     const startTime = performance.now()
     const isFloat = metric.value.includes('.')
+    let rafId: number
 
-    const animate = (currentTime: number) => {
+    const tick = (currentTime: number) => {
       const elapsed = currentTime - startTime
       const progress = Math.min(elapsed / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
-
       const current = numericValue * eased
-      setDisplayValue(isFloat ? current.toFixed(1) : Math.floor(current).toString())
+
+      // Perf: direct DOM write — no React re-render
+      if (valueRef.current) {
+        valueRef.current.textContent = isFloat
+          ? current.toFixed(1)
+          : Math.floor(current).toString()
+      }
 
       if (progress < 1) {
-        requestAnimationFrame(animate)
+        rafId = requestAnimationFrame(tick)
       }
     }
 
-    requestAnimationFrame(animate)
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
   }, [isInView, metric.value])
 
   return (
@@ -348,7 +198,7 @@ function MetricCard({ metric }: { metric: Project['metrics'][number] }) {
     >
       <div className="text-lg sm:text-xl font-bold font-mono text-foreground tracking-tight">
         {metric.prefix}
-        {displayValue}
+        <span ref={valueRef}>0</span>
         {metric.suffix && (
           <span className="text-primary text-sm">{metric.suffix}</span>
         )}
@@ -356,6 +206,16 @@ function MetricCard({ metric }: { metric: Project['metrics'][number] }) {
       <div className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-inter">
         {metric.label}
       </div>
+    </div>
+  )
+}
+
+function MetricsDashboard({ metrics }: { metrics: Project['metrics'] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      {metrics.map((metric) => (
+        <MetricCard key={metric.label} metric={metric} />
+      ))}
     </div>
   )
 }
@@ -378,7 +238,7 @@ function ProjectGrid({
             key={project.id}
             project={project}
             index={i}
-            onExpand={() => onExpand(project)}
+            onExpand={onExpand}
             parentInView={isInView}
           />
         ))}
@@ -387,7 +247,8 @@ function ProjectGrid({
   )
 }
 
-function ProjectCard({
+// Perf: memoize to prevent re-renders when parent state changes (modal open/close)
+const ProjectCard = memo(function ProjectCard({
   project,
   index,
   onExpand,
@@ -395,9 +256,14 @@ function ProjectCard({
 }: {
   project: Project
   index: number
-  onExpand: () => void
+  onExpand: (p: Project) => void
   parentInView: boolean
 }) {
+  // Perf: stable callback using the memoized onExpand
+  const handleClick = useCallback(() => {
+    onExpand(project)
+  }, [onExpand, project])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -405,7 +271,7 @@ function ProjectCard({
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
     >
       <button
-        onClick={onExpand}
+        onClick={handleClick}
         className="group w-full text-left rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] hover:border-primary/20 transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
 
@@ -419,7 +285,7 @@ function ProjectCard({
             height={400}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110 will-change-transform"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
@@ -427,7 +293,7 @@ function ProjectCard({
             {project.metrics.slice(0, 3).map((m) => (
               <div
                 key={m.label}
-                className="px-2 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-center flex-1"
+                className="px-2 py-1 rounded-lg bg-black/60 border border-white/10 text-center flex-1"
               >
                 <div className="text-xs font-bold font-mono text-white">
                   {m.prefix}{m.value}{m.suffix}
@@ -468,7 +334,7 @@ function ProjectCard({
       </button>
     </motion.div>
   )
-}
+})
 
 function ProjectDetail({
   project,
@@ -532,7 +398,7 @@ function ProjectDetail({
             alt={project.title}
             width={1200}
             height={800}
-            className="w-full h-full object-contain p-4 sm:p-8 drop-shadow-2xl"
+            className="w-full h-full object-contain p-4 sm:p-8"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-[#0a0a14]/40 to-transparent pointer-events-none" />
 
@@ -761,11 +627,11 @@ function Lightbox({ image, onClose }: { image: string; onClose: () => void }) {
       transition={{ duration: 0.3 }}
     >
 
-      <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/95" onClick={onClose} />
 
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 sm:top-8 sm:right-8 z-50 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="absolute top-4 right-4 sm:top-8 sm:right-8 z-50 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         aria-label="Close fullscreen image"
       >
         <X className="w-6 h-6" />
@@ -774,7 +640,7 @@ function Lightbox({ image, onClose }: { image: string; onClose: () => void }) {
       <motion.img
         src={image}
         alt="Fullscreen view"
-        className="relative z-10 max-w-full max-h-full object-contain drop-shadow-2xl"
+        className="relative z-10 max-w-full max-h-full object-contain"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}

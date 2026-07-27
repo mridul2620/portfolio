@@ -1,333 +1,204 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { Github, Linkedin, Mail, ArrowDownRight } from "lucide-react"
-import { gsap, ScrollTrigger } from "@/lib/gsap"
-import { TECH_TAGS } from "@/lib/data"
+import { useMemo } from "react"
+import { motion, type Variants } from "framer-motion"
+import { ArrowDownRight, Github, Linkedin, Mail } from "lucide-react"
+
+const TECH_TAGS = [
+  "React", "Next.js", "TypeScript", "Node.js", "Java",
+  "Python", "JavaScript", "Tailwind", "AWS"
+]
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "circOut" },
+  },
+}
+
+const nameVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.03 },
+  },
+}
+
+const charVariants: Variants = {
+  hidden: { opacity: 0, y: 40, rotateX: -90 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    transition: { duration: 0.6, ease: "circOut" },
+  },
+}
 
 export default function Hero() {
-  const sectionRef  = useRef<HTMLElement>(null)
-  const stickyRef   = useRef<HTMLDivElement>(null)
-  const progressRef = useRef<HTMLDivElement>(null)
-  const act0Ref     = useRef<HTMLDivElement>(null)
-  const act1Ref     = useRef<HTMLDivElement>(null)
-  const act2Ref     = useRef<HTMLDivElement>(null)
-  const orb1Ref     = useRef<HTMLDivElement>(null)
-  const orb2Ref     = useRef<HTMLDivElement>(null)
-  const orb3Ref     = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const section = sectionRef.current
-    const sticky  = stickyRef.current
-    if (!section || !sticky) return
-
-    const ctx = gsap.context(() => {
-
-      const orbTween1 = gsap.to(orb1Ref.current, {
-        x: 60, y: -40, duration: 8, ease: "sine.inOut",
-        yoyo: true, repeat: -1,
-      })
-      const orbTween2 = gsap.to(orb2Ref.current, {
-        x: -50, y: 60, duration: 11, ease: "sine.inOut",
-        yoyo: true, repeat: -1, delay: 1.5,
-      })
-      const orbTween3 = gsap.to(orb3Ref.current, {
-        x: 35, y: 30, duration: 9, ease: "sine.inOut",
-        yoyo: true, repeat: -1, delay: 3,
-      })
-
-      ScrollTrigger.create({
-        trigger : section,
-        start   : "top bottom",
-        end     : "bottom top",
-        onEnter       : () => { orbTween1.resume(); orbTween2.resume(); orbTween3.resume() },
-        onEnterBack   : () => { orbTween1.resume(); orbTween2.resume(); orbTween3.resume() },
-        onLeave       : () => { orbTween1.pause(); orbTween2.pause(); orbTween3.pause() },
-        onLeaveBack   : () => { orbTween1.pause(); orbTween2.pause(); orbTween3.pause() },
-      })
-
-      ScrollTrigger.create({
-        trigger  : section,
-        start    : "top top",
-        end      : "bottom bottom",
-        pin      : sticky,
-        pinSpacing: false,
-      })
-
-      gsap.to(progressRef.current, {
-        scaleX : 1,
-        ease   : "none",
-        scrollTrigger: {
-          trigger: section,
-          start  : "top top",
-          end    : "bottom bottom",
-          scrub  : true,
-        },
-      })
-
-      gsap.set(act0Ref.current, { opacity: 0, yPercent: 12 })
-
-      const entryTl = gsap.timeline({ delay: 0.3 })
-      entryTl
-        .fromTo(
-          sticky.querySelectorAll(".hud-corner"),
-          { opacity: 0, scale: 0.6 },
-          { opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: "power2.out" }
-        )
-        .fromTo(
-          sticky.querySelector(".hud-top-line"),
-          { scaleX: 0 },
-          { scaleX: 1, duration: 0.8, ease: "power3.out" },
-          "<0.2"
-        )
-        .fromTo(
-          sticky.querySelector(".hud-bottom-line"),
-          { scaleX: 0 },
-          { scaleX: 1, duration: 0.8, ease: "power3.out" },
-          "<"
-        )
-        .to(
-          act0Ref.current,
-          { opacity: 1, yPercent: 0, duration: 1, ease: "power3.out" },
-          ">-0.1"
-        )
-
-      const act0 = act0Ref.current
-      if (act0) {
-        const tl0 = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start  : "top top",
-            end    : "22% top",
-            scrub  : 1.2,
-          },
-        })
-        tl0.to(act0, { opacity: 0, yPercent: -8, duration: 1 })
-      }
-
-      const act1 = act1Ref.current
-      if (act1) {
-        const nameChars   = act1.querySelectorAll<HTMLElement>(".char")
-        const tags        = act1.querySelectorAll<HTMLElement>(".tech-tag")
-        const tl1 = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start  : "22% top",
-            end    : "62% top",
-            scrub  : 1.2,
-          },
-        })
-        tl1
-          .fromTo(act1,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.12 }
-          )
-          .fromTo(
-            act1.querySelector(".act1-monogram"),
-            { opacity: 0, y: 12, scale: 0.9 },
-            { opacity: 1, y: 0,  scale: 1, duration: 0.2 },
-            "<0.05"
-          )
-          .fromTo(
-            nameChars,
-            { opacity: 0, yPercent: 120, rotateX: -90 },
-            { opacity: 1, yPercent: 0,   rotateX: 0,
-              stagger: 0.012, duration: 0.3, ease: "power3.out" },
-            "<0.1"
-          )
-          .fromTo(
-            act1.querySelector(".act1-role"),
-            { opacity: 0, letterSpacing: "0.6em" },
-            { opacity: 1, letterSpacing: "0.18em", duration: 0.25 },
-            "<0.15"
-          )
-          .fromTo(
-            act1.querySelector(".act1-subtitle"),
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.2 },
-            "<0.1"
-          )
-          .fromTo(
-            tags,
-            { opacity: 0, y: 14, scale: 0.85 },
-            { opacity: 1, y: 0, scale: 1, stagger: 0.03, duration: 0.18 },
-            "<0.1"
-          )
-          .to(act1,
-            { opacity: 0, yPercent: -6, duration: 0.2 },
-            ">0.05"
-          )
-      }
-
-      const act2 = act2Ref.current
-      if (act2) {
-        const socials = act2.querySelectorAll<HTMLElement>(".social-icon")
-        const tl2 = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start  : "62% top",
-            end    : "92% top",
-            scrub  : 1.2,
-          },
-        })
-        tl2
-          .fromTo(act2,
-            { opacity: 0, yPercent: 5 },
-            { opacity: 1, yPercent: 0, duration: 0.3 }
-          )
-          .fromTo(
-            act2.querySelector(".cta-eyebrow"),
-            { opacity: 0, y: 12 },
-            { opacity: 1, y: 0, duration: 0.2 },
-            "<0.1"
-          )
-          .fromTo(
-            act2.querySelector(".cta-headline"),
-            { opacity: 0, yPercent: 30 },
-            { opacity: 1, yPercent: 0, duration: 0.25 },
-            "<0.02"
-          )
-          .fromTo(
-            act2.querySelector(".cta-btns"),
-            { opacity: 0, y: 14 },
-            { opacity: 1, y: 0, duration: 0.25 },
-            "<"
-          )
-          .fromTo(
-            socials,
-            { opacity: 0, y: 8 },
-            { opacity: 1, y: 0, stagger: 0.04, duration: 0.2 },
-            "<"
-          )
-      }
-
-    }, section)
-
-    return () => ctx.revert()
-  }, [])
-
   const splitChars = (text: string) =>
     text.split("").map((ch, i) => (
-      <span key={i} className="char" style={{ display: "inline-block" }}>
+      <motion.span
+        key={i}
+        variants={charVariants}
+        style={{ display: "inline-block" }}
+      >
         {ch === " " ? "\u00A0" : ch}
-      </span>
+      </motion.span>
     ))
+
+  const mridulChars = useMemo(() => splitChars("Mridul"), [])
+  const srivastavaChars = useMemo(() => splitChars("Srivastava"), [])
 
   return (
     <section
       id="home"
-      ref={sectionRef}
-      className="hero-scroll-section"
+      className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-[#060810]"
     >
-
-      <div ref={stickyRef} className="hero-sticky-stage">
-        <div className="hero-orbs" aria-hidden="true">
-          <div ref={orb1Ref} className="orb orb-1" />
-          <div ref={orb2Ref} className="orb orb-2" />
-          <div ref={orb3Ref} className="orb orb-3" />
-        </div>
-        <div className="hero-grid-lines"  aria-hidden="true" />
-        <div className="hero-vignette"    aria-hidden="true" />
-        <div className="hero-noise"       aria-hidden="true" />
-        <div className="hud-overlay" aria-hidden="true">
-          <span className="hud-corner hud-tl" />
-          <span className="hud-corner hud-tr" />
-          <span className="hud-corner hud-bl" />
-          <span className="hud-corner hud-br" />
-          <span className="hud-top-line" />
-          <span className="hud-bottom-line" />
-        </div>
-        <div
-          ref={progressRef}
-          className="hero-progress-bar"
-          style={{ transformOrigin: "left center", transform: "scaleX(0)" }}
-          aria-hidden="true"
-        />
-        <div className="hero-sys-label" aria-hidden="true">
-          <span className="sys-dot" />
-          MRIDUL.DEV / SYSTEM ACTIVE
-        </div>
-        <div ref={act0Ref} className="hero-act hero-act-0">
-          <p className="act0-label">Portfolio</p>
-          <h2 className="act0-headline">
-            Code that ships.<br />
-            <span className="gradient-text">Systems that scale.</span>
-          </h2>
-        </div>
-        <div ref={act1Ref} className="hero-act hero-act-1">
-          <div className="act1-monogram">
-            <span className="mono-bracket">&lt;</span>
-            <span className="mono-initials">MS</span>
-            <span className="mono-bracket">/&gt;</span>
-          </div>
-          <h1 className="hero-name" style={{ perspective: "600px" }}>
-            {splitChars("Mridul")}
-            <br />
-            {splitChars("Srivastava")}
-          </h1>
-
-          <p className="act1-role">Full Stack Developer</p>
-
-          <p className="act1-subtitle">
-            Building scalable systems · Crafting seamless UIs · Shipping impact
-          </p>
-
-          <div className="tech-tags-grid">
-            {TECH_TAGS.map((tag) => (
-              <span key={tag} className="tech-tag">{tag}</span>
-            ))}
-          </div>
-        </div>
-        <div ref={act2Ref} className="hero-act hero-act-2">
-          <p className="cta-eyebrow">
-            <span className="sys-dot" /> Available for work
-          </p>
-
-          <h2 className="cta-headline">
-            Ready to build<br />
-            <span className="gradient-text">something great?</span>
-          </h2>
-
-          <div className="cta-btns">
-            <a href="#contact" className="btn-primary">
-              Get In Touch
-              <ArrowDownRight className="btn-icon" />
-            </a>
-            <a href="#projects" className="btn-outline">
-              View Projects
-            </a>
-          </div>
-
-          <div className="cta-socials">
-            <a
-              href="https://github.com/mridul2620"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon"
-              aria-label="GitHub"
-            >
-              <Github className="w-[18px] h-[18px]" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/mridul-srivastava-a198b51b5/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="w-[18px] h-[18px]" />
-            </a>
-            <a
-              href="mailto:mridulsriv26@gmail.com"
-              className="social-icon"
-              aria-label="Email"
-            >
-              <Mail className="w-[18px] h-[18px]" />
-            </a>
-          </div>
-        </div>
-
+      {/* Background Layers (Pure CSS, NO JS calculations on scroll) */}
+      <div className="hero-grid-lines" aria-hidden="true" />
+      <div className="hero-orbs" aria-hidden="true" style={{ willChange: "transform" }}>
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
       </div>
+      <div className="hero-vignette" aria-hidden="true" />
+
+      {/* HUD Frame */}
+      <div className="hud-overlay" aria-hidden="true">
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="hud-corner hud-tl"
+        />
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="hud-corner hud-tr"
+        />
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="hud-corner hud-bl"
+        />
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="hud-corner hud-br"
+        />
+        <motion.span
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: "circOut" }}
+          className="hud-top-line"
+        />
+        <motion.span
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: "circOut" }}
+          className="hud-bottom-line"
+        />
+      </div>
+
+      <div className="hero-sys-label" aria-hidden="true">
+        <span className="sys-dot" />
+        MRIDUL.DEV / SYSTEM ACTIVE
+      </div>
+
+      {/* Main Content Area */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 flex flex-col items-center text-center px-4 max-w-4xl w-full pt-16"
+      >
+        <motion.p
+          variants={itemVariants}
+          className="font-mono text-sm tracking-[0.25em] text-white/40 uppercase mb-8"
+        >
+          Portfolio / 2024
+        </motion.p>
+
+        <motion.div variants={itemVariants} className="font-mono text-sm flex items-center gap-1 mb-6 text-white/40 tracking-wider">
+          <span className="text-primary opacity-70">&lt;</span>
+          <span className="text-white font-semibold">MS</span>
+          <span className="text-primary opacity-70">/&gt;</span>
+        </motion.div>
+
+        <motion.h1
+          variants={nameVariants}
+          className="font-display text-[clamp(2rem,5vw,5.5rem)] font-extrabold leading-[0.95] tracking-tighter text-white mb-8 drop-shadow-[0_0_80px_rgba(99,130,246,0.3)] whitespace-nowrap flex justify-center gap-x-[clamp(0.5rem,1.5vw,1.5rem)]"
+          style={{ perspective: "600px" }}
+        >
+          <span className="inline-block">{mridulChars}</span>
+          <span className="inline-block">{srivastavaChars}</span>
+        </motion.h1>
+
+        <motion.p
+          variants={itemVariants}
+          className="font-body text-lg md:text-xl text-white/50 mb-10 tracking-wide font-light max-w-2xl"
+        >
+          Building scalable systems &middot; Crafting seamless UIs &middot; Shipping impact
+        </motion.p>
+
+        <motion.div variants={itemVariants} className="flex flex-wrap gap-2 justify-center max-w-2xl mb-12">
+          {TECH_TAGS.map((tag) => (
+            <span
+              key={tag}
+              className="font-mono text-xs md:text-sm px-4 py-1.5 rounded-full border border-primary/20 text-white/60 bg-primary/5 hover:border-primary/50 hover:text-white/90 transition-all duration-300"
+            >
+              {tag}
+            </span>
+          ))}
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center w-full mb-10">
+          <a
+            href="#contact"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-primary rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95"
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            <span className="relative flex items-center gap-2">
+              Get In Touch
+              <ArrowDownRight className="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform" />
+            </span>
+          </a>
+          <a
+            href="#projects"
+            className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white/90 border border-white/20 rounded-full hover:bg-white/10 hover:text-white transition-all duration-300 active:scale-95"
+          >
+            View Work
+          </a>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex gap-6 justify-center">
+          <a href="mailto:contact@mridul.dev" className="text-white/40 hover:text-white hover:scale-110 transition-all duration-300">
+            <Mail className="w-6 h-6" />
+          </a>
+          <a href="https://www.linkedin.com/in/mridul-srivastava-a198b51b5/" target="_blank" rel="noreferrer" className="text-white/40 hover:text-[#0A66C2] hover:scale-110 transition-all duration-300">
+            <Linkedin className="w-6 h-6" />
+          </a>
+          <a href="https://github.com/mridul2620" target="_blank" rel="noreferrer" className="text-white/40 hover:text-white hover:scale-110 transition-all duration-300">
+            <Github className="w-6 h-6" />
+          </a>
+        </motion.div>
+      </motion.div>
     </section>
   )
 }

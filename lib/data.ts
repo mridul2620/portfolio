@@ -1,7 +1,5 @@
 
 
-import image from "next/image"
-
 export const TECH_TAGS = [
   'React', 'Next.js', 'Node.js', 'TypeScript',
   'Java', 'Python', 'MongoDB', 'Docker', 'AWS',

@@ -32,10 +32,34 @@ const GlowingEffect = memo(
     const containerRef = useRef<HTMLDivElement>(null);
     const lastPosition = useRef({ x: 0, y: 0 });
     const animationFrameRef = useRef<number>(0);
+    // Perf: cache bounds to avoid layout thrashing on every pointermove
+    const cachedBounds = useRef<DOMRect | null>(null);
+    // Perf: track visibility to skip work when off-screen
+    const isVisible = useRef(false);
+    // Perf: throttle timestamp
+    const lastMoveTime = useRef(0);
+
+    const invalidateBounds = useCallback(() => {
+      cachedBounds.current = null;
+    }, []);
+
+    const getBounds = useCallback(() => {
+      if (!containerRef.current) return null;
+      if (!cachedBounds.current) {
+        cachedBounds.current = containerRef.current.getBoundingClientRect();
+      }
+      return cachedBounds.current;
+    }, []);
 
     const handleMove = useCallback(
-      (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current) return;
+      (e?: MouseEvent | PointerEvent | { x: number; y: number }) => {
+        // Perf: skip entirely when element is off-screen
+        if (!isVisible.current || !containerRef.current) return;
+
+        // Perf: throttle to ~30fps (33ms) — perceptually identical for glow
+        const now = performance.now();
+        if (now - lastMoveTime.current < 33) return;
+        lastMoveTime.current = now;
 
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
@@ -45,7 +69,11 @@ const GlowingEffect = memo(
           const element = containerRef.current;
           if (!element) return;
 
-          const { left, top, width, height } = element.getBoundingClientRect();
+          // Perf: use cached bounds instead of getBoundingClientRect() every frame
+          const bounds = getBounds();
+          if (!bounds) return;
+
+          const { left, top, width, height } = bounds;
           const mouseX = e?.x ?? lastPosition.current.x;
           const mouseY = e?.y ?? lastPosition.current.y;
 
@@ -94,16 +122,41 @@ const GlowingEffect = memo(
           });
         });
       },
-      [inactiveZone, proximity, movementDuration]
+      [inactiveZone, proximity, movementDuration, getBounds]
     );
 
     useEffect(() => {
       if (disabled) return;
 
-      const handleScroll = () => handleMove();
+      const element = containerRef.current;
+      if (!element) return;
+
+      // Perf: IntersectionObserver to completely disable listeners when off-screen
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisible.current = entry.isIntersecting;
+          if (entry.isIntersecting) {
+            invalidateBounds();
+          }
+        },
+        { rootMargin: "100px" }
+      );
+      observer.observe(element);
+
+      // Perf: invalidate bounds on scroll (debounced) and resize
+      let scrollTimeout: ReturnType<typeof setTimeout>;
+      const handleScroll = () => {
+        invalidateBounds();
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => handleMove(), 50);
+      };
+      const handleResize = () => {
+        invalidateBounds();
+      };
       const handlePointerMove = (e: PointerEvent) => handleMove(e);
 
       window.addEventListener("scroll", handleScroll, { passive: true });
+      window.addEventListener("resize", handleResize, { passive: true });
       document.body.addEventListener("pointermove", handlePointerMove, {
         passive: true,
       });
@@ -112,10 +165,13 @@ const GlowingEffect = memo(
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
         }
+        clearTimeout(scrollTimeout);
+        observer.disconnect();
         window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleResize);
         document.body.removeEventListener("pointermove", handlePointerMove);
       };
-    }, [handleMove, disabled]);
+    }, [handleMove, disabled, invalidateBounds]);
 
     return (
       <>

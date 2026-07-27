@@ -184,7 +184,8 @@ section:not(#home) {
   border-radius: 9999px;
   animation: particleFloat 16s linear infinite;
   opacity: 0.6;
-  will-change: transform;
+  /* Removed will-change: transform — CSS animations auto-promote to
+     compositing layers; explicit will-change wastes memory on 8 elements */
 }
 
 @keyframes particleFloat {
@@ -222,9 +223,27 @@ section:not(#home) {
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  /* Removed filter: blur() completely! The radial-gradient now natively
+     interpolates to an alpha-0 version of its own color instead of 'transparent'
+     (which defaults to rgba(0,0,0,0) and causes hard dark edges).
+     This provides perfectly soft orbs with ZERO compositing cost. */
   will-change: transform;
   opacity: 0.55;
+}
+
+@keyframes gentleFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -40px) scale(1.05); }
+}
+
+@keyframes gentleFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 20px) scale(0.95); }
+}
+
+@keyframes gentleFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 30px) scale(1.1); }
 }
 
 .orb-1 {
@@ -232,7 +251,8 @@ section:not(#home) {
   height: 55vmax;
   top: -20vmax;
   left: -10vmax;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.55) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.55) 0%, rgba(59, 130, 246, 0) 70%);
+  animation: gentleFloat1 18s ease-in-out infinite;
 }
 
 .orb-2 {
@@ -240,7 +260,8 @@ section:not(#home) {
   height: 45vmax;
   bottom: -15vmax;
   right: -10vmax;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(139, 92, 246, 0) 70%);
+  animation: gentleFloat2 22s ease-in-out infinite;
 }
 
 .orb-3 {
@@ -248,7 +269,8 @@ section:not(#home) {
   height: 30vmax;
   top: 30%;
   left: 55%;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0) 70%);
+  animation: gentleFloat3 15s ease-in-out infinite;
 }
 
 /* ── Subtle grid lines ─────────────────────────────────────── */
@@ -257,10 +279,11 @@ section:not(#home) {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
   background-size: 80px 80px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  /* Removed heavy mask-image. The vignette layer on top already provides
+     the fading edges effect. CSS masks over large areas are GPU-intensive. */
 }
 
 /* ── Vignette ──────────────────────────────────────────────── */
@@ -280,11 +303,11 @@ section:not(#home) {
 .hero-noise {
   position: absolute;
   inset: 0;
-  opacity: 0.03;
   pointer-events: none;
   z-index: 2;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+  /* Perf: Removed SVG feTurbulence data URI. Tiling an SVG turbulence filter
+     across the entire screen while animating elements beneath it forces the GPU
+     to re-rasterize the filter on every frame, causing massive lag. */
 }
 
 /* ── HUD Frame ─────────────────────────────────────────────── */
@@ -617,7 +640,8 @@ section:not(#home) {
   color: rgba(255, 255, 255, 0.8);
   border: 1.5px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  /* Removed backdrop-filter: blur(10px) — saves a compositing layer;
+     the semi-transparent bg already provides the frosted look */
   transition: background 0.2s, border-color 0.2s, transform 0.2s;
   text-decoration: none;
 }
@@ -646,7 +670,7 @@ section:not(#home) {
   border: 1px solid rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
+  /* Removed backdrop-filter: blur(8px) — saves a compositing layer */
   transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
   text-decoration: none;
 }
@@ -693,8 +717,25 @@ section[id] {
 }
 
 /* ── will-change: only elements that GSAP actively animates ─────────────── */
-/* (The .orb class already has will-change: transform — no change needed)    */
-/* Adding it to the hero progress bar which is scrub-animated */
 .hero-progress-bar {
   will-change: transform;
+}
+
+/* ── Content-visibility: skip rendering/painting off-screen sections ────── */
+/* This lets the browser avoid layout, paint, and composite work for sections
+   that haven't scrolled into view yet — massive win for initial load and
+   mid-page scroll performance. */
+#skills,
+#experience,
+#projects,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* ── Containment: removed contain on hero — it broke GSAP pin layout ─── */
+
+footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
 }
