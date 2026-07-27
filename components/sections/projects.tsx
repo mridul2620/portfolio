@@ -364,7 +364,7 @@ function ProjectDetail({
     >
 
       <motion.div
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/95"
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
